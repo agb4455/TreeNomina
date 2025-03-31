@@ -36,14 +36,19 @@
       text-anchor: middle;
     }
     .tooltip {
-      position: absolute;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 5px;
-      border-radius: 5px;
-      font-size: 12px;
-      display: none;
-    }
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        display: none;
+        max-width: 200px; /* Ancho fijo */
+        max-height: 150px; /* Altura dinámica con límite */
+        overflow-y: auto; /* Agregar scroll si el contenido es grande */
+        white-space: normal; /* Permite que el texto se ajuste */
+        }
+
     /* Estilos para la ventana modal */
     .modal {
       display: none;
