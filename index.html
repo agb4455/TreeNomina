@@ -22,8 +22,8 @@
       rx: 6;
       ry: 6;
     }
-    .node-label-text { fill: #f8f9fa; font-size: 14px; font-weight: 600; }
-    .node-value-text { font-size: 12px; font-weight: bold; }
+    .node-label-text { fill: #f8f9fa; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; }
     .node-circle { fill: #f1c40f; }
     .info-circle {
       fill: #3498db;
@@ -90,20 +90,23 @@
   node.append("circle").attr("class", "node-circle").attr("r", 5);
   
   node.append("rect").attr("class", "node-label-rect")
-    .attr("x", -40).attr("y", 10)
-    .attr("width", 80).attr("height", 40);
+    .attr("x", d => -((d.data.name.length * 7) / 2))
+    .attr("y", 10)
+    .attr("width", d => d.data.name.length * 7)
+    .attr("height", 40);
   
   node.append("text").attr("class", "node-label-text")
-    .attr("x", -30).attr("y", 30)
+    .attr("x", 0).attr("y", 30)
     .text(d => d.data.name);
   
   node.append("text").attr("class", "node-value-text")
-    .attr("x", -30).attr("y", 45)
+    .attr("x", 0).attr("y", 45)
     .attr("fill", d => d.data.value >= 0 ? "green" : "red")
     .text(d => d.data.value.toFixed(2));
   
   node.append("circle").attr("class", "info-circle")
-    .attr("cx", 35).attr("cy", 25).attr("r", 6)
+    .attr("cx", d => (d.data.name.length * 7) / 2 - 10)
+    .attr("cy", 25).attr("r", 6)
     .on("mouseover", (event, d) => {
       d3.select("#tooltip")
         .style("left", `${event.pageX + 5}px`)
