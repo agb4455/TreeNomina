@@ -2,143 +2,114 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Árbol Horizontal con Niveles, Etiquetas y Valores</title>
+  <title>Flujo estilo oscuro</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
+    /* Estilos globales */
     body {
       margin: 0;
       padding: 0;
-      overflow-x: scroll;
-      background-color: #007ACC;
+      background-color: #181818; /* Fondo oscuro general */
+      overflow-x: scroll;       /* Scroll horizontal si el contenido es ancho */
+      color: #fff;             /* Texto claro */
+      font-family: sans-serif;
     }
-    /* Contenedor que define el área total del árbol */
+    /* Contenedor del SVG */
     #tree-container {
-      width: 2400px; /* Ancho mayor para permitir scroll */
-      height: 800px;
+      width: 1200px; /* Ajusta según necesites */
+      height: 600px;
+      margin: 0 auto;
+      position: relative;
     }
+    /* El SVG ocupará el tamaño indicado (puedes ajustar) */
     svg {
-      width: 2400px;
-      height: 800px;
+      width: 1200px;
+      height: 600px;
+      background-color: #181818; /* Mismo fondo que body */
     }
+    /* Estilo de las líneas que unen los nodos */
     .link {
       fill: none;
-      stroke: #fff;
+      stroke: #6c757d;  /* Gris medio */
       stroke-width: 2px;
     }
-    /* Estilos para el rectángulo de fondo de la etiqueta del nodo */
-    .node-label-rect {
-      fill: #fff;
-      stroke: #007ACC;
-      stroke-width: 2px;
-      rx: 5;
-      ry: 5;
+    /* Grupo de cada nodo */
+    .node {
+      cursor: pointer;
     }
-    /* Estilos para el nombre del nodo */
-    .node-label-text {
-      fill: #007ACC;
-      font-family: sans-serif;
+    /* El rectángulo del nodo (fondo oscuro, bordes redondeados) */
+    .node-rect {
+      fill: #2d2d2d;
+      stroke: #2d2d2d;
+      rx: 6;  /* esquinas redondeadas */
+      ry: 6;
+    }
+    /* Texto principal dentro del nodo */
+    .node-name {
+      fill: #f8f9fa; /* texto claro */
       font-size: 14px;
+      font-weight: 600;
     }
-    /* Estilos para el valor decimal */
-    .node-value-text {
-      font-family: sans-serif;
+    /* Texto para la duración (o subtítulo) */
+    .node-duration {
+      fill: #9ca3af; /* gris claro */
       font-size: 12px;
-      font-weight: bold;
     }
-    /* Encabezado para cada nivel */
-    .level-header {
-      fill: #fff;
-      font-family: sans-serif;
-      font-size: 16px;
-      font-weight: bold;
+    /* Círculo que aparece a la izquierda del nombre */
+    .node-circle {
+      fill: #f1c40f; /* color “amarillo/dorado” */
     }
   </style>
 </head>
 <body>
+
 <div id="tree-container">
   <svg id="tree-svg"></svg>
 </div>
 
 <script>
-  // Datos jerárquicos de ejemplo con la propiedad "value"
+  // Ejemplo de datos (puedes expandirlo o adaptarlo)
   const data = {
-    name: "Programación",
-    value: 0.0,
+    name: "build",
+    duration: "21s",
     children: [
       {
-        name: "Imperativa",
-        value: 0.5,
-        children: [
-          {
-            name: "Estructurados",
-            value: 1.2,
-            children: [
-              { name: "Basic", value: 1.23, img: "img/basic.png" }
-            ]
-          },
-          {
-            name: "Procedimental",
-            value: 0.8,
-            children: [
-              { name: "C", value: 2.45, img: "img/c.png" },
-              { name: "PHP", value: -0.75, img: "img/php.png" }
-            ]
-          },
-          {
-            name: "OOP",
-            value: 1.0,
-            children: [
-              { name: "Go", value: 3.14, img: "img/go.png" },
-              { name: "Java", value: -1.0, img: "img/java.png" }
-            ]
-          },
-          { name: "Otros", value: 0.0 }
-        ]
+        name: "report-build-status",
+        duration: "10s"
       },
       {
-        name: "Declarativa",
-        value: -0.2,
-        children: [
-          {
-            name: "Funcional",
-            value: 0.9,
-            children: [
-              { name: "Elixir", value: 1.75, img: "img/elixir.png" },
-              { name: "Scala", value: -0.5, img: "img/scala.png" }
-            ]
-          },
-          {
-            name: "Lógico",
-            value: -0.8,
-            children: [
-              { name: "Prolog", value: 0.3, img: "img/prolog.png" }
-            ]
-          },
-          { name: "Otros", value: 0.0 }
-        ]
+        name: "deploy",
+        duration: "30s"
       }
     ]
   };
 
-  // Definir márgenes para dar espacio a los encabezados y evitar que el árbol quede pegado al borde superior
-  const margin = { top: 60, right: 50, bottom: 50, left: 50 };
-  const width = 2400;
-  const height = 800;
+  // Dimensiones generales
+  const width = 1200;
+  const height = 600;
+  const margin = { top: 50, right: 50, bottom: 50, left: 50 };
 
+  // Seleccionamos y configuramos el SVG
   const svg = d3.select("#tree-svg")
                 .attr("viewBox", `0 0 ${width} ${height}`);
 
-  // Creamos la raíz jerárquica y configuramos el layout
+  // Creamos la raíz jerárquica
   const root = d3.hierarchy(data);
+
+  // Layout de árbol horizontal
+  // size([alto, ancho]) => invertimos para que sea horizontal
   const treeLayout = d3.tree()
-                        .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+                       .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+
+  // Ejecutamos el layout sobre la raíz
   treeLayout(root);
 
-  // Enlaces horizontales con ajuste de márgenes
+  // Generador de enlaces horizontales
   const linkGenerator = d3.linkHorizontal()
                           .x(d => d.y + margin.left)
                           .y(d => d.x + margin.top);
 
+  // Dibujamos los enlaces
   svg.selectAll("path.link")
      .data(root.links())
      .enter()
@@ -146,73 +117,48 @@
      .attr("class", "link")
      .attr("d", linkGenerator);
 
-  // Grupo para cada nodo
+  // Creamos un grupo <g> para cada nodo
   const nodeGroup = svg.selectAll("g.node")
     .data(root.descendants())
     .enter()
     .append("g")
     .attr("class", "node")
-    .attr("transform", d => `translate(${d.y + margin.left}, ${d.x + margin.top})`);
+    .attr("transform", d => `translate(${d.y + margin.left},${d.x + margin.top})`);
 
-  // Por cada nodo se agrega imagen (o círculo), rectángulo de fondo y textos (nombre y valor)
-  nodeGroup.each(function(d) {
-    const group = d3.select(this);
-    
-    // Mostrar imagen o círculo
-    if(d.data.img) {
-      group.append("image")
-        .attr("xlink:href", d.data.img)
-        .attr("width", 30)
-        .attr("height", 30)
-        .attr("x", -15)
-        .attr("y", -15);
-    } else {
-      group.append("circle")
-        .attr("r", 10)
-        .attr("fill", "#fff")
-        .attr("stroke", "#007ACC")
-        .attr("stroke-width", 2);
-    }
+  // Dimensiones del rectángulo de cada nodo
+  const nodeWidth = 120;
+  const nodeHeight = 40;
 
-    // Rectángulo de fondo para la etiqueta
-    // Aumentamos la altura para dos líneas de texto (por ejemplo, 40 px)
-    group.append("rect")
-      .attr("class", "node-label-rect")
-      .attr("x", -50)
-      .attr("y", 20)
-      .attr("width", 100)
-      .attr("height", 40);
+  // Fondo del nodo (rectángulo oscuro con esquinas redondeadas)
+  nodeGroup.append("rect")
+    .attr("class", "node-rect")
+    .attr("width", nodeWidth)
+    .attr("height", nodeHeight)
+    .attr("x", -nodeWidth / 2)  // Para centrar el rect en la posición del nodo
+    .attr("y", -nodeHeight / 2);
 
-    // Texto del nombre (primera línea) centrado en la parte superior del rectángulo
-    group.append("text")
-      .attr("class", "node-label-text")
-      .attr("x", 0)
-      .attr("y", 20 + 15) // Posición vertical para el nombre
-      .attr("text-anchor", "middle")
-      .text(d.data.name);
+  // Círculo decorativo a la izquierda (puedes ajustarlo)
+  nodeGroup.append("circle")
+    .attr("class", "node-circle")
+    .attr("cx", -nodeWidth / 2 + 12)   // Un poco a la izquierda
+    .attr("cy", 0)
+    .attr("r", 6);
 
-    // Texto del valor decimal (segunda línea) centrado en la parte inferior del rectángulo
-    group.append("text")
-      .attr("class", "node-value-text")
-      .attr("x", 0)
-      .attr("y", 20 + 35) // Posición vertical para el valor
-      .attr("text-anchor", "middle")
-      .attr("fill", d => (d.data.value >= 0 ? "green" : "red"))
-      .text(d.data.value.toFixed(2));
-  });
+  // Nombre principal (texto) en el centro-izquierda
+  nodeGroup.append("text")
+    .attr("class", "node-name")
+    .attr("x", -nodeWidth / 2 + 28) // un poco a la derecha del círculo
+    .attr("y", -4)                 // ligeramente arriba del centro vertical
+    .text(d => d.data.name);
 
-  // Encabezados para cada nivel del árbol (agrupamos por d.depth)
-  const niveles = d3.groups(root.descendants(), d => d.depth);
-  niveles.forEach(([depth, nodos]) => {
-    // Calculamos la posición horizontal promedio de los nodos en este nivel
-    const avgY = d3.mean(nodos, d => d.y + margin.left);
-    svg.append("text")
-       .attr("class", "level-header")
-       .attr("x", avgY)
-       .attr("y", margin.top / 2)
-       .attr("text-anchor", "middle")
-       .text(`Nivel ${depth}`);
-  });
+  // Duración (subtítulo) en la parte de abajo (más claro)
+  nodeGroup.append("text")
+    .attr("class", "node-duration")
+    .attr("x", -nodeWidth / 2 + 28)
+    .attr("y", 10)
+    .text(d => d.data.duration ? d.data.duration : "");
+
 </script>
+
 </body>
 </html>
