@@ -44,67 +44,75 @@
       font-size: 12px;
       display: none;
     }
+    /* Estilos para la ventana modal */
     .modal {
       display: none;
       position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 15% auto;
+      top: 20px;
+      right: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
       padding: 20px;
-      border-radius: 8px;
       width: 300px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
     }
-    .close {
-      float: right;
-      font-size: 28px;
-      cursor: pointer;
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-    .add-button {
+    .modal-body {
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .close-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      padding: 10px 20px;
-      background: #28a745;
+      font-size: 20px;
+      cursor: pointer;
+      color: #aaa;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+    .open-modal-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #007bff;
       color: white;
+      padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 14px;
+    }
+    .open-modal-btn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-<button class="add-button" onclick="openModal()">Añadir Nodo</button>
-
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h3>Añadir Nodo</h3>
-    <label>Nombre: <input type="text" id="nodeName"></label><br>
-    <label>Valor: <input type="number" id="nodeValue"></label><br>
-    <label>Información: <input type="text" id="nodeInfo"></label><br>
-    <button onclick="addNode()">Guardar</button>
-  </div>
-</div>
-
 <div id="tooltip" class="tooltip"></div>
 <svg width="100vw" height="100vh"></svg>
 
-<script>
-  function openModal() { document.getElementById("modal").style.display = "block"; }
-  function closeModal() { document.getElementById("modal").style.display = "none"; }
-  function addNode() {
-    alert("Nodo añadido: " + document.getElementById("nodeName").value);
-    closeModal();
-  }
+<!-- Botón para abrir el modal -->
+<button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
 
+<!-- Ventana Modal -->
+<div id="myModal" class="modal">
+  <div class="modal-header">Información Modal</div>
+  <div class="modal-body">
+    Esta es una ventana modal de ejemplo. Aquí puedes poner la información que desees.
+  </div>
+  <span class="close-btn" id="closeModalBtn">&times;</span>
+</div>
+
+<script>
   const data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
       { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
           { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
@@ -116,8 +124,91 @@
               { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
               { name: "Otras", value: -0.75, info: "Otras deducciones" }
             ]}
+        ]},
+      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
+          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
+              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
+              { name: "MEI", value: -0.5, info: "Deducción MEI" }
+            ]},
+          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
+          { name: "Otros", value: 0.0, info: "Otros descuentos" }
         ]}
     ]};
+
+  const width = 2400, height = 800;
+  const svg = d3.select("svg").call(
+    d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) =>
+      g.attr("transform", e.transform))
+  );
+  const g = svg.append("g").attr("transform", "translate(100, 50)");
+
+  const root = d3.hierarchy(data);
+  const treeLayout = d3.tree().size([height, width]);
+  treeLayout(root);
+
+  g.selectAll("path.link").data(root.links()).enter()
+    .append("path").attr("class", "link")
+    .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+  const node = g.selectAll("g.node").data(root.descendants()).enter()
+    .append("g").attr("class", "node")
+    .attr("transform", d => `translate(${d.y}, ${d.x})`);
+
+  node.append("circle").attr("class", "node-circle").attr("r", 5);
+  
+  node.append("rect").attr("class", "node-label-rect")
+    .attr("x", d => -((d.data.name.length * 7) / 2))
+    .attr("y", 10)
+    .attr("width", d => d.data.name.length * 7)
+    .attr("height", 40);
+  
+  node.append("text").attr("class", "node-label-text")
+    .attr("x", 0).attr("y", 30)
+    .text(d => d.data.name);
+  
+  node.append("text").attr("class", "node-value-text")
+    .attr("x", 0).attr("y", 45)
+    .attr("fill", d => d.data.value >= 0 ? "green" : "red")
+    .text(d => d.data.value.toFixed(2));
+  
+  const infoGroup = node.append("g").attr("class", "info-group");
+  
+  infoGroup.append("circle").attr("class", "info-circle")
+    .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("cy", 35).attr("r", 6)
+    .on("mouseover", (event, d) => {
+      d3.select("#tooltip")
+        .style("left", `${event.pageX + 5}px`)
+        .style("top", `${event.pageY + 5}px`)
+        .style("display", "block")
+        .text(d.data.info || "Sin información");
+    })
+    .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+
+  infoGroup.append("text").attr("class", "info-text")
+    .attr("x", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("y", 38)
+    .text("i");
+
+  // Lógica para abrir y cerrar el modal
+  const modal = document.getElementById("myModal");
+  const openModalBtn = document.getElementById("openModalBtn");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+
+  openModalBtn.onclick = () => {
+    modal.style.display = "block";
+  };
+
+  closeModalBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  window.onclick = (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
 </script>
+
 </body>
 </html>
