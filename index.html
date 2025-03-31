@@ -48,8 +48,9 @@
     .modal {
       display: none;
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background-color: white;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -93,6 +94,18 @@
     .open-modal-btn:hover {
       background-color: #0056b3;
     }
+    /* Capa oscura de fondo */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      pointer-events: all;
+    }
   </style>
 </head>
 <body>
@@ -102,6 +115,9 @@
 
 <!-- Botón para abrir el modal -->
 <button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
+
+<!-- Capa oscura de fondo -->
+<div id="overlay" class="overlay"></div>
 
 <!-- Ventana Modal -->
 <div id="myModal" class="modal">
@@ -192,20 +208,27 @@
 
   // Lógica para abrir y cerrar el modal
   const modal = document.getElementById("myModal");
+  const overlay = document.getElementById("overlay");
   const openModalBtn = document.getElementById("openModalBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
 
   openModalBtn.onclick = () => {
     modal.style.display = "block";
+    overlay.style.display = "block";
+    document.body.style.pointerEvents = "none"; // Deshabilita interacción con el fondo
   };
 
   closeModalBtn.onclick = () => {
     modal.style.display = "none";
+    overlay.style.display = "none";
+    document.body.style.pointerEvents = "auto"; // Restaura la interacción con el fondo
   };
 
   window.onclick = (event) => {
-    if (event.target === modal) {
+    if (event.target === overlay) {
       modal.style.display = "none";
+      overlay.style.display = "none";
+      document.body.style.pointerEvents = "auto"; // Restaura la interacción con el fondo
     }
   };
 </script>
