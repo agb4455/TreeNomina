@@ -26,8 +26,14 @@
     .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; }
     .node-circle { fill: #f1c40f; }
     .info-circle {
-      fill: #3498db;
+      fill: #d3d3d3;
       cursor: pointer;
+    }
+    .info-text {
+      fill: black;
+      font-size: 10px;
+      font-weight: bold;
+      text-anchor: middle;
     }
     .tooltip {
       position: absolute;
@@ -104,9 +110,11 @@
     .attr("fill", d => d.data.value >= 0 ? "green" : "red")
     .text(d => d.data.value.toFixed(2));
   
-  node.append("circle").attr("class", "info-circle")
-    .attr("cx", d => (d.data.name.length * 7) / 2 - 10)
-    .attr("cy", 25).attr("r", 6)
+  const infoGroup = node.append("g").attr("class", "info-group");
+  
+  infoGroup.append("circle").attr("class", "info-circle")
+    .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("cy", 35).attr("r", 6)
     .on("mouseover", (event, d) => {
       d3.select("#tooltip")
         .style("left", `${event.pageX + 5}px`)
@@ -115,6 +123,11 @@
         .text(d.data.info || "Sin información");
     })
     .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+  
+  infoGroup.append("text").attr("class", "info-text")
+    .attr("x", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("y", 38)
+    .text("i");
 </script>
 </body>
 </html>
