@@ -2,62 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Flujo estilo oscuro</title>
+  <title>Árbol Oscuro con Niveles, Etiquetas y Valores</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    /* Estilos globales */
+    /* Estilos generales con fondo oscuro */
     body {
       margin: 0;
       padding: 0;
-      background-color: #181818; /* Fondo oscuro general */
-      overflow-x: scroll;       /* Scroll horizontal si el contenido es ancho */
-      color: #fff;             /* Texto claro */
+      overflow-x: scroll;
+      background-color: #181818; /* Fondo oscuro */
       font-family: sans-serif;
     }
     /* Contenedor del SVG */
     #tree-container {
-      width: 1200px; /* Ajusta según necesites */
-      height: 600px;
-      margin: 0 auto;
-      position: relative;
+      width: 2400px; /* Ancho mayor para scroll horizontal */
+      height: 800px;
     }
-    /* El SVG ocupará el tamaño indicado (puedes ajustar) */
     svg {
-      width: 1200px;
-      height: 600px;
-      background-color: #181818; /* Mismo fondo que body */
+      width: 2400px;
+      height: 800px;
+      background-color: #181818;
     }
-    /* Estilo de las líneas que unen los nodos */
+    /* Enlaces entre nodos */
     .link {
       fill: none;
-      stroke: #6c757d;  /* Gris medio */
+      stroke: #6c757d; /* Gris medio */
       stroke-width: 2px;
     }
-    /* Grupo de cada nodo */
-    .node {
-      cursor: pointer;
+    /* Encabezado de cada nivel */
+    .level-header {
+      fill: #f8f9fa;
+      font-size: 16px;
+      font-weight: bold;
     }
-    /* El rectángulo del nodo (fondo oscuro, bordes redondeados) */
-    .node-rect {
+    /* Rectángulo de fondo para cada nodo (estilo tarjeta oscura) */
+    .node-label-rect {
       fill: #2d2d2d;
       stroke: #2d2d2d;
-      rx: 6;  /* esquinas redondeadas */
+      rx: 6;
       ry: 6;
     }
-    /* Texto principal dentro del nodo */
-    .node-name {
-      fill: #f8f9fa; /* texto claro */
+    /* Texto del nombre del nodo */
+    .node-label-text {
+      fill: #f8f9fa;
       font-size: 14px;
       font-weight: 600;
     }
-    /* Texto para la duración (o subtítulo) */
-    .node-duration {
-      fill: #9ca3af; /* gris claro */
+    /* Texto para el valor decimal */
+    .node-value-text {
       font-size: 12px;
+      font-weight: bold;
     }
-    /* Círculo que aparece a la izquierda del nombre */
+    /* Círculo de respaldo (si no hay imagen) */
     .node-circle {
-      fill: #f1c40f; /* color “amarillo/dorado” */
+      fill: #f1c40f; /* Amarillo/dorado */
     }
   </style>
 </head>
@@ -68,48 +66,90 @@
 </div>
 
 <script>
-  // Ejemplo de datos (puedes expandirlo o adaptarlo)
+  // Datos jerárquicos de ejemplo con propiedades "value" (decimal) e imagen (opcional)
   const data = {
-    name: "build",
-    duration: "21s",
+    name: "Programación",
+    value: 0.0,
+    img: "img/programacion.png", // Opcional: imagen para el nodo raíz
     children: [
       {
-        name: "report-build-status",
-        duration: "10s"
+        name: "Imperativa",
+        value: 0.5,
+        children: [
+          {
+            name: "Estructurados",
+            value: 1.2,
+            children: [
+              { name: "Basic", value: 1.23, img: "img/basic.png" }
+            ]
+          },
+          {
+            name: "Procedimental",
+            value: 0.8,
+            children: [
+              { name: "C", value: 2.45, img: "img/c.png" },
+              { name: "PHP", value: -0.75, img: "img/php.png" }
+            ]
+          },
+          {
+            name: "OOP",
+            value: 1.0,
+            children: [
+              { name: "Go", value: 3.14, img: "img/go.png" },
+              { name: "Java", value: -1.0, img: "img/java.png" }
+            ]
+          },
+          { name: "Otros", value: 0.0 }
+        ]
       },
       {
-        name: "deploy",
-        duration: "30s"
+        name: "Declarativa",
+        value: -0.2,
+        children: [
+          {
+            name: "Funcional",
+            value: 0.9,
+            children: [
+              { name: "Elixir", value: 1.75, img: "img/elixir.png" },
+              { name: "Scala", value: -0.5, img: "img/scala.png" }
+            ]
+          },
+          {
+            name: "Lógico",
+            value: -0.8,
+            children: [
+              { name: "Prolog", value: 0.3, img: "img/prolog.png" }
+            ]
+          },
+          { name: "Otros", value: 0.0 }
+        ]
       }
     ]
   };
 
-  // Dimensiones generales
-  const width = 1200;
-  const height = 600;
-  const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+  // Márgenes para separar el árbol de los bordes (incluyendo espacio para los encabezados de nivel)
+  const margin = { top: 60, right: 50, bottom: 50, left: 50 };
+  const width = 2400;
+  const height = 800;
 
-  // Seleccionamos y configuramos el SVG
+  // Configuramos el SVG
   const svg = d3.select("#tree-svg")
                 .attr("viewBox", `0 0 ${width} ${height}`);
 
   // Creamos la raíz jerárquica
   const root = d3.hierarchy(data);
 
-  // Layout de árbol horizontal
-  // size([alto, ancho]) => invertimos para que sea horizontal
+  // Layout de árbol horizontal (size: [alto, ancho])
   const treeLayout = d3.tree()
-                       .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
-
-  // Ejecutamos el layout sobre la raíz
+                        .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
   treeLayout(root);
 
-  // Generador de enlaces horizontales
+  // Generador de enlaces horizontales (se intercambian x e y para que crezca de izquierda a derecha)
   const linkGenerator = d3.linkHorizontal()
                           .x(d => d.y + margin.left)
                           .y(d => d.x + margin.top);
 
-  // Dibujamos los enlaces
+  // Dibujamos los enlaces entre nodos
   svg.selectAll("path.link")
      .data(root.links())
      .enter()
@@ -123,41 +163,68 @@
     .enter()
     .append("g")
     .attr("class", "node")
-    .attr("transform", d => `translate(${d.y + margin.left},${d.x + margin.top})`);
+    .attr("transform", d => `translate(${d.y + margin.left}, ${d.x + margin.top})`);
 
-  // Dimensiones del rectángulo de cada nodo
+  // Dimensiones del rectángulo de cada nodo (se ampliaron para dos líneas de texto)
   const nodeWidth = 120;
-  const nodeHeight = 40;
+  const nodeHeight = 50; // Altura incrementada para nombre y valor
 
-  // Fondo del nodo (rectángulo oscuro con esquinas redondeadas)
-  nodeGroup.append("rect")
-    .attr("class", "node-rect")
-    .attr("width", nodeWidth)
-    .attr("height", nodeHeight)
-    .attr("x", -nodeWidth / 2)  // Para centrar el rect en la posición del nodo
-    .attr("y", -nodeHeight / 2);
+  // Por cada nodo se añade imagen (o círculo), un rectángulo y dos líneas de texto
+  nodeGroup.each(function(d) {
+    const group = d3.select(this);
+    
+    // Mostrar imagen si está definida, o un círculo de respaldo
+    if(d.data.img) {
+      group.append("image")
+        .attr("xlink:href", d.data.img)
+        .attr("width", 30)
+        .attr("height", 30)
+        .attr("x", -nodeWidth/2 + 5) // Ajusta para que la imagen se posicione a la izquierda dentro del rectángulo
+        .attr("y", -15);
+    } else {
+      group.append("circle")
+        .attr("class", "node-circle")
+        .attr("cx", -nodeWidth/2 + 20)
+        .attr("cy", 0)
+        .attr("r", 8);
+    }
 
-  // Círculo decorativo a la izquierda (puedes ajustarlo)
-  nodeGroup.append("circle")
-    .attr("class", "node-circle")
-    .attr("cx", -nodeWidth / 2 + 12)   // Un poco a la izquierda
-    .attr("cy", 0)
-    .attr("r", 6);
+    // Rectángulo de fondo (tarjeta oscura) que contendrá el nombre y el valor
+    group.append("rect")
+      .attr("class", "node-label-rect")
+      .attr("width", nodeWidth)
+      .attr("height", nodeHeight)
+      .attr("x", -nodeWidth/2)
+      .attr("y", -nodeHeight/2);
 
-  // Nombre principal (texto) en el centro-izquierda
-  nodeGroup.append("text")
-    .attr("class", "node-name")
-    .attr("x", -nodeWidth / 2 + 28) // un poco a la derecha del círculo
-    .attr("y", -4)                 // ligeramente arriba del centro vertical
-    .text(d => d.data.name);
+    // Nombre del nodo (primera línea)
+    group.append("text")
+      .attr("class", "node-label-text")
+      .attr("x", -nodeWidth/2 + 40) // Posicionado a la derecha del icono
+      .attr("y", -nodeHeight/2 + 18)
+      .text(d.data.name);
 
-  // Duración (subtítulo) en la parte de abajo (más claro)
-  nodeGroup.append("text")
-    .attr("class", "node-duration")
-    .attr("x", -nodeWidth / 2 + 28)
-    .attr("y", 10)
-    .text(d => d.data.duration ? d.data.duration : "");
+    // Valor decimal (segunda línea) centrado dentro del rectángulo
+    group.append("text")
+      .attr("class", "node-value-text")
+      .attr("x", -nodeWidth/2 + 40)
+      .attr("y", -nodeHeight/2 + 38)
+      .attr("fill", d.data.value >= 0 ? "green" : "red")
+      .text(d.data.value.toFixed(2));
+  });
 
+  // Encabezados para cada nivel del árbol (agrupamos por d.depth)
+  const niveles = d3.groups(root.descendants(), d => d.depth);
+  niveles.forEach(([depth, nodos]) => {
+    // Calculamos la posición horizontal promedio de los nodos en este nivel
+    const avgX = d3.mean(nodos, d => d.y + margin.left);
+    svg.append("text")
+       .attr("class", "level-header")
+       .attr("x", avgX)
+       .attr("y", margin.top / 2)  // Ubicado en la parte superior
+       .attr("text-anchor", "middle")
+       .text(`Nivel ${depth}`);
+  });
 </script>
 
 </body>
