@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Árbol Dinámico con Zoom</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #181818;
+      font-family: sans-serif;
+    }
+    .link {
+      fill: none;
+      stroke: #6c757d;
+      stroke-width: 2px;
+    }
+    .node-label-rect {
+      fill: #2d2d2d;
+      stroke: #2d2d2d;
+      rx: 6;
+      ry: 6;
+    }
+    .node-label-text { fill: #f8f9fa; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; }
+    .node-circle { fill: #f1c40f; }
+    .info-circle {
+      fill: #d3d3d3;
+      cursor: pointer;
+    }
+    .info-text {
+      fill: black;
+      font-size: 10px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+    .tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="tooltip" class="tooltip"></div>
+<svg width="100vw" height="100vh"></svg>
+
+<script>
+  const data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
+      { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
+          { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
+              { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
+              { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
+            ]},
+          { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
+              { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
+              { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
+              { name: "Otras", value: -0.75, info: "Otras deducciones" }
+            ]}
+        ]},
+      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
+          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
+              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
+              { name: "MEI", value: -0.5, info: "Deducción MEI" }
+            ]},
+          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
+          { name: "Otros", value: 0.0, info: "Otros descuentos" }
+        ]}
+    ]};
+
+  const width = 2400, height = 800;
+  const svg = d3.select("svg").call(
+    d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) =>
+      g.attr("transform", e.transform))
+  );
+  const g = svg.append("g").attr("transform", "translate(100, 50)");
+
+  const root = d3.hierarchy(data);
+  const treeLayout = d3.tree().size([height, width]);
+  treeLayout(root);
+
+  g.selectAll("path.link").data(root.links()).enter()
+    .append("path").attr("class", "link")
+    .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+  const node = g.selectAll("g.node").data(root.descendants()).enter()
+    .append("g").attr("class", "node")
+    .attr("transform", d => `translate(${d.y}, ${d.x})`);
+
+  node.append("circle").attr("class", "node-circle").attr("r", 5);
+  
+  node.append("rect").attr("class", "node-label-rect")
+    .attr("x", d => -((d.data.name.length * 7) / 2))
+    .attr("y", 10)
+    .attr("width", d => d.data.name.length * 7)
+    .attr("height", 40);
+  
+  node.append("text").attr("class", "node-label-text")
+    .attr("x", 0).attr("y", 30)
+    .text(d => d.data.name);
+  
+  node.append("text").attr("class", "node-value-text")
+    .attr("x", 0).attr("y", 45)
+    .attr("fill", d => d.data.value >= 0 ? "green" : "red")
+    .text(d => d.data.value.toFixed(2));
+  
+  const infoGroup = node.append("g").attr("class", "info-group");
+  
+  infoGroup.append("circle").attr("class", "info-circle")
+    .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("cy", 35).attr("r", 6)
+    .on("mouseover", (event, d) => {
+      d3.select("#tooltip")
+        .style("left", `${event.pageX + 5}px`)
+        .style("top", `${event.pageY + 5}px`)
+        .style("display", "block")
+        .text(d.data.info || "Sin información");
+    })
+    .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+  
+  infoGroup.append("text").attr("class", "info-text")
+    .attr("x", d => (d.data.name.length * 7) / 2 + 10)
+    .attr("y", 38)
+    .text("i");
+</script>
+</body>
+</html>
