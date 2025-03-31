@@ -2,240 +2,85 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Árbol Oscuro con Medidas Dinámicas</title>
+  <title>Árbol Dinámico con Zoom</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    /* Fondo y fuente general */
     body {
       margin: 0;
-      padding: 0;
-      overflow-x: scroll;
+      overflow: hidden;
       background-color: #181818;
       font-family: sans-serif;
     }
-    /* Contenedor y SVG */
-    #tree-container {
-      width: 2400px;
-      height: 800px;
-    }
-    svg {
-      width: 2400px;
-      height: 800px;
-      background-color: #181818;
-    }
-    /* Enlaces entre nodos */
     .link {
       fill: none;
       stroke: #6c757d;
       stroke-width: 2px;
     }
-    /* Encabezado de nivel */
-    .level-header {
-      fill: #f8f9fa;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    /* Rectángulo base para el nodo (tarjeta oscura) */
     .node-label-rect {
       fill: #2d2d2d;
       stroke: #2d2d2d;
       rx: 6;
       ry: 6;
     }
-    /* Texto del nombre del nodo */
-    .node-label-text {
-      fill: #f8f9fa;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    /* Texto para el valor (decimal) */
-    .node-value-text {
-      font-size: 12px;
-      font-weight: bold;
-    }
-    /* Círculo de respaldo (si no hay imagen) */
-    .node-circle {
-      fill: #f1c40f;
-    }
+    .node-label-text { fill: #f8f9fa; font-size: 14px; font-weight: 600; }
+    .node-value-text { font-size: 12px; font-weight: bold; }
+    .node-circle { fill: #f1c40f; }
   </style>
 </head>
 <body>
 
-<div id="tree-container">
-  <svg id="tree-svg"></svg>
-</div>
+<svg width="100vw" height="100vh"></svg>
 
 <script>
-  // Datos jerárquicos de ejemplo (puedes expandir o adaptar)
-  const data = {
-    name: "Liquido a percibir",
-    value: 0.0,
-    children: [
-      {
-        name: "Devengos",
-        value: 0.5,
-        children: [
-          {
-            name: "Percepciones Salariales",
-            value: 1.2,
-            children: [
+  const data = { name: "Liquido a percibir", value: 0.0, children: [
+      { name: "Devengos", value: 0.5, children: [
+          { name: "Percepciones Salariales", value: 1.2, children: [
               { name: "Salario Base", value: 1.23 },
-              {
-                name: "Complementos Salariales",
-                value: 0.5,
-                children: []
-              }
-            ]
-          },
-          {
-            name: "Otras Percepciones",
-            value: 0.8,
-            children: [
-              { name: "Suplidos", value: 2.45, children: []},
-              { name: "Prestaciones SS", value: -0.75, children: []},
-              { name: "Otras", value: -0.75, children: []}
-            ]
-          }
-        ]
-      },
-      {
-        name: "Deducciones",
-        value: -0.2,
-        children: [
-          {
-            name: "Seguridad Social",
-            value: 0.9,
-            children: [
-              { name: "Contingencias Comunes", value: 1.75},
-              { name: "MEI", value: -0.5},
-              { name: "Contingencias Profesionales", value: 1.75},
-              { name: "FP", value: -0.5}
-            ]
-          },
-          {
-            name: "IRPF",
-            value: -0.8
-          },
+              { name: "Complementos Salariales", value: 0.5 }
+            ]},
+          { name: "Otras Percepciones", value: 0.8, children: [
+              { name: "Suplidos", value: 2.45 },
+              { name: "Prestaciones SS", value: -0.75 },
+              { name: "Otras", value: -0.75 }
+            ]}
+        ]},
+      { name: "Deducciones", value: -0.2, children: [
+          { name: "Seguridad Social", value: 0.9, children: [
+              { name: "Contingencias Comunes", value: 1.75 },
+              { name: "MEI", value: -0.5 }
+            ]},
+          { name: "IRPF", value: -0.8 },
           { name: "Otros", value: 0.0 }
-        ]
-      }
-    ]
-  };
+        ]}
+    ]};
 
-  // Márgenes para separar el contenido
-  const margin = { top: 60, right: 50, bottom: 50, left: 50 };
-  const width = 2400;
-  const height = 800;
+  const width = 2400, height = 800;
+  const svg = d3.select("svg").call(
+    d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) =>
+      g.attr("transform", e.transform))
+  );
+  const g = svg.append("g").attr("transform", "translate(100, 50)");
 
-  // Configuramos el SVG
-  const svg = d3.select("#tree-svg")
-                .attr("viewBox", `0 0 ${width} ${height}`);
-
-  // Creamos la raíz jerárquica y ejecutamos el layout de árbol horizontal
   const root = d3.hierarchy(data);
-  const treeLayout = d3.tree()
-                        .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+  const treeLayout = d3.tree().size([height, width]);
   treeLayout(root);
 
-  // Generador de enlaces (horizontal, ajustando márgenes)
-  const linkGenerator = d3.linkHorizontal()
-                          .x(d => d.y + margin.left)
-                          .y(d => d.x + margin.top);
+  g.selectAll("path.link").data(root.links()).enter()
+    .append("path").attr("class", "link")
+    .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
 
-  // Dibujamos los enlaces
-  svg.selectAll("path.link")
-     .data(root.links())
-     .enter()
-     .append("path")
-     .attr("class", "link")
-     .attr("d", linkGenerator);
+  const node = g.selectAll("g.node").data(root.descendants()).enter()
+    .append("g").attr("class", "node")
+    .attr("transform", d => `translate(${d.y}, ${d.x})`);
 
-  // Grupo para cada nodo
-  const nodeGroup = svg.selectAll("g.node")
-    .data(root.descendants())
-    .enter()
-    .append("g")
-    .attr("class", "node")
-    .attr("transform", d => `translate(${d.y + margin.left}, ${d.x + margin.top})`);
-
-  // Para cada nodo, se añaden imagen (o círculo), textos y se calcula dinámicamente el tamaño de la "caja"
-  nodeGroup.each(function(d) {
-    const group = d3.select(this);
-
-    // Agregar imagen o círculo a la izquierda del contenido
-    if(d.data.img) {
-      group.append("image")
-        .attr("xlink:href", d.data.img)
-        .attr("width", 30)
-        .attr("height", 30)
-        .attr("x", -75 + 5)  // Posición aproximada (se usará 75 como referencia de mitad de ancho)
-        .attr("y", -15);
-    } else {
-      group.append("circle")
-        .attr("class", "node-circle")
-        .attr("cx", -75 + 20)
-        .attr("cy", 0)
-        .attr("r", 8);
-    }
-
-    // Agregar textos para nombre y valor (con posiciones provisionales)
-    const nameText = group.append("text")
-      .attr("class", "node-label-text")
-      .attr("x", -75 + 40)  // Dejamos espacio para el ícono
-      .attr("y", -5)
-      .text(d.data.name);
-
-    const valueText = group.append("text")
-      .attr("class", "node-value-text")
-      .attr("x", -75 + 40)
-      .attr("y", 15)
-      .attr("fill", d.data.value >= 0 ? "green" : "red")
-      .text(d.data.value.toFixed(2));
-
-    // Definimos un "padding" interno para la caja
-    const paddingX = 10, paddingY = 5;
-
-    // Medir el tamaño de los textos
-    const nameBBox = nameText.node().getBBox();
-    const valueBBox = valueText.node().getBBox();
-
-    // El ancho será el máximo de ambos textos + padding; la altura, la suma de ambos con padding
-    const textWidth = Math.max(nameBBox.width, valueBBox.width);
-    const textHeight = nameBBox.height + valueBBox.height;
-    const rectWidth = textWidth + paddingX * 2;
-    const rectHeight = textHeight + paddingY * 2;
-
-    // Insertamos el rectángulo de fondo detrás del texto
-    // Se posiciona de forma que quede centrado en el contenido textual, dejando espacio para el ícono
-    group.insert("rect", ":first-child")
-      .attr("class", "node-label-rect")
-      .attr("width", rectWidth)
-      .attr("height", rectHeight)
-      .attr("x", -rectWidth/2 + 30) // Se desplaza 30px a la derecha para dejar espacio al ícono
-      .attr("y", -rectHeight/2);
-
-    // Actualizamos las posiciones de los textos para que queden dentro del rectángulo
-    nameText
-      .attr("x", -rectWidth/2 + 30 + paddingX)
-      .attr("y", -rectHeight/2 + paddingY + nameBBox.height);
-
-    valueText
-      .attr("x", -rectWidth/2 + 30 + paddingX)
-      .attr("y", -rectHeight/2 + paddingY + nameBBox.height + valueBBox.height);
-  });
-
-  // Encabezados para cada nivel, calculando la posición horizontal promedio de los nodos en cada nivel
-  const niveles = d3.groups(root.descendants(), d => d.depth);
-  niveles.forEach(([depth, nodos]) => {
-    const avgX = d3.mean(nodos, d => d.y + margin.left);
-    svg.append("text")
-       .attr("class", "level-header")
-       .attr("x", avgX)
-       .attr("y", margin.top / 2)
-       .attr("text-anchor", "middle")
-       .text(`Nivel ${depth}`);
-  });
+  node.append("circle").attr("class", "node-circle").attr("r", 5);
+  node.append("text").attr("class", "node-label-text")
+    .attr("x", 10).attr("y", -5)
+    .text(d => d.data.name);
+  node.append("text").attr("class", "node-value-text")
+    .attr("x", 10).attr("y", 10)
+    .attr("fill", d => d.data.value >= 0 ? "green" : "red")
+    .text(d => d.data.value.toFixed(2));
 </script>
-
 </body>
 </html>
