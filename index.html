@@ -2,27 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Árbol Horizontal con Etiquetas</title>
+  <title>Árbol Horizontal con Niveles y Etiquetas</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
       margin: 0;
       padding: 0;
       overflow-x: scroll;
-    }
-    #tree-container {
-      width: 2000px;
-      height: 800px;
       background-color: #007ACC;
     }
+    /* Contenedor que define el área total del árbol */
+    #tree-container {
+      width: 2400px; /* Ancho mayor para permitir scroll */
+      height: 800px;
+    }
     svg {
-      width: 2000px;
+      width: 2400px;
       height: 800px;
     }
     .link {
       fill: none;
       stroke: #fff;
       stroke-width: 2px;
+    }
+    /* Estilos para los rectángulos de las etiquetas de los nodos */
+    .node-label-rect {
+      fill: #fff;
+      stroke: #007ACC;
+      stroke-width: 2px;
+      rx: 5;
+      ry: 5;
+    }
+    .node-label-text {
+      fill: #007ACC;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+    /* Estilos para el encabezado de cada nivel */
+    .level-header {
+      fill: #fff;
+      font-family: sans-serif;
+      font-size: 16px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -59,9 +80,7 @@
               { name: "Java", img: "img/java.png" }
             ]
           },
-          {
-            name: "Otros"
-          }
+          { name: "Otros" }
         ]
       },
       {
@@ -80,47 +99,52 @@
               { name: "Prolog", img: "img/prolog.png" }
             ]
           },
-          {
-            name: "Otros"
-          }
+          { name: "Otros" }
         ]
       }
     ]
   };
 
-  const width = 2000, height = 800;
+  // Definir márgenes para dar espacio a los encabezados y evitar que el árbol quede pegado al borde
+  const margin = { top: 60, right: 50, bottom: 50, left: 50 };
+  const width = 2400;
+  const height = 800;
+
   const svg = d3.select("#tree-svg")
                 .attr("viewBox", `0 0 ${width} ${height}`);
 
-  // Configuramos el layout de árbol horizontal
+  // Creamos la raíz jerárquica y configuramos el layout
   const root = d3.hierarchy(data);
-  const treeLayout = d3.tree().size([height - 100, width - 300]);
+
+  // Ajustamos el tamaño del árbol restando los márgenes
+  const treeLayout = d3.tree()
+                        .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
   treeLayout(root);
 
+  // Creamos enlaces horizontales (invertimos: x = d.y, y = d.x) y los desplazamos con el margen
   const linkGenerator = d3.linkHorizontal()
-    .x(d => d.y)
-    .y(d => d.x);
+                          .x(d => d.y + margin.left)
+                          .y(d => d.x + margin.top);
 
   svg.selectAll("path.link")
-    .data(root.links())
-    .enter()
-    .append("path")
-    .attr("class", "link")
-    .attr("d", linkGenerator);
+     .data(root.links())
+     .enter()
+     .append("path")
+     .attr("class", "link")
+     .attr("d", linkGenerator);
 
-  // Creamos un grupo para cada nodo
+  // Grupo para cada nodo
   const nodeGroup = svg.selectAll("g.node")
     .data(root.descendants())
     .enter()
     .append("g")
     .attr("class", "node")
-    .attr("transform", d => `translate(${d.y},${d.x})`);
+    .attr("transform", d => `translate(${d.y + margin.left}, ${d.x + margin.top})`);
 
-  // Para cada nodo, añadimos la imagen (o círculo en su defecto), el rectángulo y el texto debajo
+  // Añadimos imagen o círculo para representar el nodo
   nodeGroup.each(function(d) {
     const group = d3.select(this);
     
-    // Si existe imagen, se muestra; de lo contrario, un círculo
     if(d.data.img) {
       group.append("image")
         .attr("xlink:href", d.data.img)
@@ -136,24 +160,34 @@
         .attr("stroke-width", 2);
     }
 
-    // Rectángulo de fondo para el texto (posicionado debajo de la imagen)
+    // Rectángulo para la etiqueta debajo de la imagen
     group.append("rect")
+      .attr("class", "node-label-rect")
       .attr("x", -50)
-      .attr("y", 20)    // Comienza justo debajo de la imagen (30px de alto aproximadamente)
+      .attr("y", 20)
       .attr("width", 100)
-      .attr("height", 25)
-      .attr("rx", 5)    // Bordes redondeados
-      .attr("ry", 5)
-      .attr("fill", "#fff")
-      .attr("stroke", "#007ACC");
+      .attr("height", 25);
 
     // Texto centrado dentro del rectángulo
     group.append("text")
+      .attr("class", "node-label-text")
       .attr("x", 0)
-      .attr("y", 20 + 17) // Ajustamos para centrar verticalmente (dependiendo del tamaño del rectángulo)
+      .attr("y", 20 + 17) // Ajuste vertical para centrar el texto
       .attr("text-anchor", "middle")
-      .attr("fill", "#007ACC")
       .text(d.data.name);
+  });
+
+  // Añadimos encabezados para cada nivel del árbol (agrupamos por d.depth)
+  const niveles = d3.groups(root.descendants(), d => d.depth);
+  niveles.forEach(([depth, nodos]) => {
+    // Calculamos la posición horizontal promedio de los nodos en este nivel
+    const avgY = d3.mean(nodos, d => d.y + margin.left);
+    svg.append("text")
+       .attr("class", "level-header")
+       .attr("x", avgY)
+       .attr("y", margin.top / 2)  // Ubicado en la parte superior, dentro del margen superior
+       .attr("text-anchor", "middle")
+       .text(`Nivel ${depth}`);
   });
 </script>
 </body>
