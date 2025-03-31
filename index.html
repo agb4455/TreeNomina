@@ -2,59 +2,37 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Árbol de Programación</title>
-  <!-- Carga de D3.js -->
+  <title>Árbol Horizontal con Etiquetas</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
       margin: 0;
       padding: 0;
-      /* El body puede ser un contenedor con scroll horizontal */
-      overflow-x: scroll; 
+      overflow-x: scroll;
     }
-
-    /* Ajusta el ancho para que quepa todo el árbol; puedes modificar según tus necesidades */
     #tree-container {
-      width: 2000px;  /* El ancho que quieras, para dar espacio horizontal */
-      height: 800px;  /* Alto del contenedor */
-      position: relative;
-      background-color: #007ACC; /* Color de fondo similar a tu ejemplo (opcional) */
+      width: 2000px;
+      height: 800px;
+      background-color: #007ACC;
     }
-
     svg {
-      width: 2000px;  /* Coincidir con #tree-container */
-      height: 800px;  /* Coincidir con #tree-container */
+      width: 2000px;
+      height: 800px;
     }
-
-    text {
-      font-family: sans-serif;
-      font-size: 14px;
-      fill: #ffffff; /* texto blanco para que contraste con el fondo */
-    }
-
-    /* Opcional: un estilo para las líneas de los enlaces */
     .link {
       fill: none;
       stroke: #fff;
       stroke-width: 2px;
     }
-
-    /* Opcional: un estilo para los nodos (si usas círculos) */
-    .node circle {
-      fill: #fff;
-      stroke: #007ACC;
-      stroke-width: 2px;
-    }
   </style>
 </head>
 <body>
-
 <div id="tree-container">
   <svg id="tree-svg"></svg>
 </div>
 
 <script>
-  // Datos en formato jerárquico
+  // Datos jerárquicos de ejemplo
   const data = {
     name: "Programación",
     children: [
@@ -110,29 +88,19 @@
     ]
   };
 
-  // Dimensiones totales del SVG
-  const width = 2000;
-  const height = 800;
-
-  // Seleccionar el SVG
+  const width = 2000, height = 800;
   const svg = d3.select("#tree-svg")
-                .attr("width", width)
-                .attr("height", height);
+                .attr("viewBox", `0 0 ${width} ${height}`);
 
-  // Crear raíz jerárquica a partir de data
+  // Configuramos el layout de árbol horizontal
   const root = d3.hierarchy(data);
-
-  // Generador de layout tipo "tree", ajustado para horizontal
-  // En D3, x e y se suelen invertir para un árbol horizontal
   const treeLayout = d3.tree().size([height - 100, width - 300]);
   treeLayout(root);
 
-  // Generador de enlaces horizontales
   const linkGenerator = d3.linkHorizontal()
     .x(d => d.y)
     .y(d => d.x);
 
-  // Agregar enlaces (links) entre nodos
   svg.selectAll("path.link")
     .data(root.links())
     .enter()
@@ -140,37 +108,53 @@
     .attr("class", "link")
     .attr("d", linkGenerator);
 
-  // Crear un grupo <g> para cada nodo
+  // Creamos un grupo para cada nodo
   const nodeGroup = svg.selectAll("g.node")
     .data(root.descendants())
     .enter()
     .append("g")
     .attr("class", "node")
-    // Ubicar cada <g> en la posición calculada
     .attr("transform", d => `translate(${d.y},${d.x})`);
 
-  // Si quieres círculos para representar los nodos:
-  nodeGroup.append("circle")
-    .attr("r", 10);
+  // Para cada nodo, añadimos la imagen (o círculo en su defecto), el rectángulo y el texto debajo
+  nodeGroup.each(function(d) {
+    const group = d3.select(this);
+    
+    // Si existe imagen, se muestra; de lo contrario, un círculo
+    if(d.data.img) {
+      group.append("image")
+        .attr("xlink:href", d.data.img)
+        .attr("width", 30)
+        .attr("height", 30)
+        .attr("x", -15)
+        .attr("y", -15);
+    } else {
+      group.append("circle")
+        .attr("r", 10)
+        .attr("fill", "#fff")
+        .attr("stroke", "#007ACC")
+        .attr("stroke-width", 2);
+    }
 
-  // Texto con el nombre de cada nodo
-  nodeGroup.append("text")
-    .attr("dy", 4)
-    .attr("x", 15)
-    .style("text-anchor", "start")
-    .text(d => d.data.name);
+    // Rectángulo de fondo para el texto (posicionado debajo de la imagen)
+    group.append("rect")
+      .attr("x", -50)
+      .attr("y", 20)    // Comienza justo debajo de la imagen (30px de alto aproximadamente)
+      .attr("width", 100)
+      .attr("height", 25)
+      .attr("rx", 5)    // Bordes redondeados
+      .attr("ry", 5)
+      .attr("fill", "#fff")
+      .attr("stroke", "#007ACC");
 
-  // Si quieres mostrar imágenes (íconos) en lugar de círculos:
-  // (Descomenta lo siguiente y comenta la parte de circles si lo deseas)
-  /*
-  nodeGroup.append("image")
-    .attr("xlink:href", d => d.data.img || null)
-    .attr("width", 30)   // Ajusta tamaño
-    .attr("height", 30)
-    .attr("x", -15)      // Para centrar la imagen en el nodo
-    .attr("y", -15);
-  */
+    // Texto centrado dentro del rectángulo
+    group.append("text")
+      .attr("x", 0)
+      .attr("y", 20 + 17) // Ajustamos para centrar verticalmente (dependiendo del tamaño del rectángulo)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#007ACC")
+      .text(d.data.name);
+  });
 </script>
-
 </body>
 </html>
