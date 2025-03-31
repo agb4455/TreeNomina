@@ -5,241 +5,71 @@
   <title>Árbol Dinámico con Zoom</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #181818;
-      font-family: sans-serif;
-    }
-    .link {
-      fill: none;
-      stroke: #6c757d;
-      stroke-width: 2px;
-    }
-    .node-label-rect {
-      fill: #2d2d2d;
-      stroke: #2d2d2d;
-      rx: 6;
-      ry: 6;
-    }
+    body { margin: 0; overflow: hidden; background-color: #181818; font-family: sans-serif; }
+    .link { fill: none; stroke: #6c757d; stroke-width: 2px; }
+    .node-label-rect { fill: #2d2d2d; stroke: #2d2d2d; rx: 6; ry: 6; }
     .node-label-text { fill: #f8f9fa; font-size: 12px; font-weight: 600; text-anchor: middle; }
     .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; }
     .node-circle { fill: #f1c40f; }
-    .info-circle {
-      fill: #d3d3d3;
-      cursor: pointer;
-    }
-    .info-text {
-      fill: black;
-      font-size: 10px;
-      font-weight: bold;
-      text-anchor: middle;
-    }
-    .tooltip {
-        position: absolute;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        display: none;
-        max-width: 200px; /* Ancho fijo */
-        max-height: 150px; /* Altura dinámica con límite */
-        overflow-y: auto; /* Agregar scroll si el contenido es grande */
-        white-space: normal; /* Permite que el texto se ajuste */
-        }
-
-    /* Estilos para la ventana modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 20px;
-      width: 300px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-    .modal-header {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .modal-body {
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      cursor: pointer;
-      color: #aaa;
-    }
-    .close-btn:hover {
-      color: #000;
-    }
-    .open-modal-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .open-modal-btn:hover {
-      background-color: #0056b3;
-    }
-    /* Capa oscura de fondo */
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 999;
-      pointer-events: all;
-    }
+    .tooltip { position: absolute; background: rgba(0, 0, 0, 0.8); color: white; padding: 5px; border-radius: 5px; font-size: 12px; display: none; }
+    .overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); z-index: 999; }
+    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 8px; width: 400px; max-height: 80vh; overflow-y: auto; padding: 20px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; }
+    .close-btn { position: absolute; top: 10px; right: 10px; font-size: 20px; cursor: pointer; color: #aaa; }
+    .close-btn:hover { color: #000; }
+    .open-modal-btn, .update-values-btn { position: absolute; top: 20px; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+    .open-modal-btn { right: 20px; background-color: #007bff; color: white; }
+    .open-modal-btn:hover { background-color: #0056b3; }
+    .update-values-btn { right: 140px; background-color: #28a745; color: white; }
+    .update-values-btn:hover { background-color: #218838; }
   </style>
 </head>
 <body>
-
+<button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
+<button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+<div id="overlay" class="overlay"></div>
+<div id="myModal" class="modal">
+  <span class="close-btn" id="closeModalBtn">&times;</span>
+  <div class="modal-header">Información Modal</div>
+  <div class="modal-body">Esta es una ventana modal centrada con fondo oscurecido.</div>
+</div>
 <div id="tooltip" class="tooltip"></div>
 <svg width="100vw" height="100vh"></svg>
-
-<!-- Botón para abrir el modal -->
-<button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
-
-<!-- Capa oscura de fondo -->
-<div id="overlay" class="overlay"></div>
-
-<!-- Ventana Modal -->
-<div id="myModal" class="modal">
-  <div class="modal-header">Información Modal</div>
-  <div class="modal-body">
-    Esta es una ventana modal de ejemplo. Aquí puedes poner la información que desees.
-  </div>
-  <span class="close-btn" id="closeModalBtn">&times;</span>
-</div>
-
 <script>
-  const data = { name: "Liquido a percibir", value: 0.0, info: "El líquido a percibir, también conocido como líquido total a percibir o importe líquido es el sueldo neto del trabajador y por lo tanto la cantidad del ingreso que realice la empresa a su cuenta bancaria. De esta manera, cuando hablamos de calcular el líquido a percibir, nos estamos refiriendo a calcular el sueldo neto del trabajador.", children: [
-      { name: "Devengos", value: 0.0, info: "Información sobre devengos", children: [
-          { name: "Percepciones Salariales", value: 0, info: "Detalles sobre percepciones", children: [
-              { name: "Salario Base", value: 0, info: "Salario base mensual" },
-              { name: "Complementos Salariales", value: 0, info: "Extras salariales" }
-            ]},
-          { name: "Otras Percepciones", value: 0.0, info: "Información adicional", children: [
-              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados" },
-              { name: "Prestaciones SS", value: 0.0, info: "Deducción por SS" },
-              { name: "Otras", value: 0.0, info: "Otras deducciones" }
+  const data = { name: "Liquido a percibir", value: 0.0, children: [
+      { name: "Devengos", value: 0.5, children: [
+          { name: "Percepciones Salariales", value: 1.2, children: [
+              { name: "Salario Base", value: 1.23 },
+              { name: "Complementos Salariales", value: 0.5 }
             ]}
-        ]},
-      { name: "Deducciones", value: 0, info: "Deducciones aplicadas", children: [
-          { name: "Seguridad Social", value:0, info: "Pago a la seguridad social", children: [
-              { name: "Contingencias Comunes", value: 0, info: "Deducción por contingencias" },
-              { name: "MEI", value: 0, info: "Deducción MEI" }
-            ]},
-          { name: "IRPF", value: 0, info: "Impuesto sobre la renta" },
-          { name: "Otros", value: 0, info: "Otros descuentos" }
         ]}
     ]};
-
   const width = 2400, height = 800;
-  const svg = d3.select("svg").call(
-    d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) =>
-      g.attr("transform", e.transform))
-  );
+  const svg = d3.select("svg").call(d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) => g.attr("transform", e.transform)));
   const g = svg.append("g").attr("transform", "translate(100, 50)");
-
   const root = d3.hierarchy(data);
-  const treeLayout = d3.tree().size([height, width]);
-  treeLayout(root);
-
-  g.selectAll("path.link").data(root.links()).enter()
-    .append("path").attr("class", "link")
-    .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
-
-  const node = g.selectAll("g.node").data(root.descendants()).enter()
-    .append("g").attr("class", "node")
-    .attr("transform", d => `translate(${d.y}, ${d.x})`);
-
+  d3.tree().size([height, width])(root);
+  g.selectAll("path.link").data(root.links()).enter().append("path").attr("class", "link").attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+  const node = g.selectAll("g.node").data(root.descendants()).enter().append("g").attr("class", "node").attr("transform", d => `translate(${d.y}, ${d.x})`);
   node.append("circle").attr("class", "node-circle").attr("r", 5);
-  
-  node.append("rect").attr("class", "node-label-rect")
-    .attr("x", d => -((d.data.name.length * 7) / 2))
-    .attr("y", 10)
-    .attr("width", d => d.data.name.length * 7)
-    .attr("height", 40);
-  
-  node.append("text").attr("class", "node-label-text")
-    .attr("x", 0).attr("y", 30)
-    .text(d => d.data.name);
-  
-  node.append("text").attr("class", "node-value-text")
-    .attr("x", 0).attr("y", 45)
-    .attr("fill", d => d.data.value >= 0 ? "green" : "red")
-    .text(d => d.data.value.toFixed(2));
-  
-  const infoGroup = node.append("g").attr("class", "info-group");
-  
-  infoGroup.append("circle").attr("class", "info-circle")
-    .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
-    .attr("cy", 35).attr("r", 6)
-    .on("mouseover", (event, d) => {
-      d3.select("#tooltip")
-        .style("left", `${event.pageX + 5}px`)
-        .style("top", `${event.pageY + 5}px`)
-        .style("display", "block")
-        .text(d.data.info || "Sin información");
-    })
-    .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
-
-  infoGroup.append("text").attr("class", "info-text")
-    .attr("x", d => (d.data.name.length * 7) / 2 + 10)
-    .attr("y", 38)
-    .text("i");
-
-  // Lógica para abrir y cerrar el modal
-  const modal = document.getElementById("myModal");
-  const overlay = document.getElementById("overlay");
-  const openModalBtn = document.getElementById("openModalBtn");
-  const closeModalBtn = document.getElementById("closeModalBtn");
-
-  openModalBtn.onclick = () => {
-    modal.style.display = "block";
-    overlay.style.display = "block";
-    document.body.style.pointerEvents = "none"; // Deshabilita interacción con el fondo
-  };
-
-  closeModalBtn.onclick = () => {
-    modal.style.display = "none";
-    overlay.style.display = "none";
-    document.body.style.pointerEvents = "auto"; // Restaura la interacción con el fondo
-  };
-
-  window.onclick = (event) => {
-    if (event.target === overlay) {
-      modal.style.display = "none";
-      overlay.style.display = "none";
-      document.body.style.pointerEvents = "auto"; // Restaura la interacción con el fondo
-    }
-  };
-
-
-
+  node.append("text").attr("class", "node-value-text").attr("x", 0).attr("y", 45).attr("fill", d => d.data.value >= 0 ? "green" : "red").text(d => d.data.value.toFixed(2));
+  function calcularSumaValores(nodo) {
+    if (!nodo.children) return nodo.data.value;
+    nodo.data.value = nodo.children.reduce((sum, child) => sum + calcularSumaValores(child), 0);
+    return nodo.data.value;
+  }
+  document.getElementById("updateValuesBtn").addEventListener("click", () => {
+    const nodoDevengos = root.descendants().find(n => n.data.name === "Devengos");
+    if (nodoDevengos) calcularSumaValores(nodoDevengos);
+    g.selectAll(".node-value-text").text(d => d.data.value.toFixed(2)).attr("fill", d => d.data.value >= 0 ? "green" : "red");
+  });
+  document.getElementById("openModalBtn").addEventListener("click", () => {
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("myModal").style.display = "block";
+  });
+  document.getElementById("closeModalBtn").addEventListener("click", () => {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("myModal").style.display = "none";
+  });
 </script>
-
 </body>
 </html>
