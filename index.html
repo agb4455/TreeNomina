@@ -68,58 +68,53 @@
 <script>
   // Datos jerárquicos de ejemplo (puedes expandir o adaptar)
   const data = {
-    name: "Programación",
+    name: "Liquido a percibir",
     value: 0.0,
-    img: "img/programacion.png", // Imagen opcional para el nodo raíz
     children: [
       {
-        name: "Imperativa",
+        name: "Devengos",
         value: 0.5,
         children: [
           {
-            name: "Estructurados",
+            name: "Percepciones Salariales",
             value: 1.2,
             children: [
-              { name: "Basic", value: 1.23, img: "img/basic.png" }
+              { name: "Salario Base", value: 1.23 },
+              {
+                name: "Complementos Salariales",
+                value: 0.5,
+                children: []
+              }
             ]
           },
           {
-            name: "Procedimental",
+            name: "Otras Percepciones",
             value: 0.8,
             children: [
-              { name: "C", value: 2.45, img: "img/c.png" },
-              { name: "PHP", value: -0.75, img: "img/php.png" }
+              { name: "Suplidos", value: 2.45, children: []},
+              { name: "Prestaciones SS", value: -0.75, children: []},
+              { name: "Otras", value: -0.75, children: []}
             ]
-          },
-          {
-            name: "OOP",
-            value: 1.0,
-            children: [
-              { name: "Go", value: 3.14, img: "img/go.png" },
-              { name: "Java", value: -1.0, img: "img/java.png" }
-            ]
-          },
-          { name: "Otros", value: 0.0 }
+          }
         ]
       },
       {
-        name: "Declarativa",
+        name: "Deducciones",
         value: -0.2,
         children: [
           {
-            name: "Funcional",
+            name: "Seguridad Social",
             value: 0.9,
             children: [
-              { name: "Elixir", value: 1.75, img: "img/elixir.png" },
-              { name: "Scala", value: -0.5, img: "img/scala.png" }
+              { name: "Contingencias Comunes", value: 1.75},
+              { name: "MEI", value: -0.5},
+              { name: "Contingencias Profesionales", value: 1.75},
+              { name: "FP", value: -0.5}
             ]
           },
           {
-            name: "Lógico",
-            value: -0.8,
-            children: [
-              { name: "Prolog", value: 0.3, img: "img/prolog.png" }
-            ]
+            name: "IRPF",
+            value: -0.8
           },
           { name: "Otros", value: 0.0 }
         ]
