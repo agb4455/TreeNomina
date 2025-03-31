@@ -129,25 +129,25 @@
 </div>
 
 <script>
-  const data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
-      { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
-          { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
-              { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
-              { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
+  const data = { name: "Liquido a percibir", value: 0.0, info: "El líquido a percibir, también conocido como líquido total a percibir o importe líquido es el sueldo neto del trabajador y por lo tanto la cantidad del ingreso que realice la empresa a su cuenta bancaria. De esta manera, cuando hablamos de calcular el líquido a percibir, nos estamos refiriendo a calcular el sueldo neto del trabajador.", children: [
+      { name: "Devengos", value: 0.0, info: "Información sobre devengos", children: [
+          { name: "Percepciones Salariales", value: 0, info: "Detalles sobre percepciones", children: [
+              { name: "Salario Base", value: 0, info: "Salario base mensual" },
+              { name: "Complementos Salariales", value: 0, info: "Extras salariales" }
             ]},
-          { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
-              { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
-              { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
-              { name: "Otras", value: -0.75, info: "Otras deducciones" }
+          { name: "Otras Percepciones", value: 0.0, info: "Información adicional", children: [
+              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados" },
+              { name: "Prestaciones SS", value: 0.0, info: "Deducción por SS" },
+              { name: "Otras", value: 0.0, info: "Otras deducciones" }
             ]}
         ]},
-      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
-          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
-              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
-              { name: "MEI", value: -0.5, info: "Deducción MEI" }
+      { name: "Deducciones", value: 0, info: "Deducciones aplicadas", children: [
+          { name: "Seguridad Social", value:0, info: "Pago a la seguridad social", children: [
+              { name: "Contingencias Comunes", value: 0, info: "Deducción por contingencias" },
+              { name: "MEI", value: 0, info: "Deducción MEI" }
             ]},
-          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
-          { name: "Otros", value: 0.0, info: "Otros descuentos" }
+          { name: "IRPF", value: 0, info: "Impuesto sobre la renta" },
+          { name: "Otros", value: 0, info: "Otros descuentos" }
         ]}
     ]};
 
@@ -231,6 +231,9 @@
       document.body.style.pointerEvents = "auto"; // Restaura la interacción con el fondo
     }
   };
+
+
+
 </script>
 
 </body>
