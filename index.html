@@ -25,32 +25,46 @@
     .node-label-text { fill: #f8f9fa; font-size: 14px; font-weight: 600; }
     .node-value-text { font-size: 12px; font-weight: bold; }
     .node-circle { fill: #f1c40f; }
+    .info-circle {
+      fill: #3498db;
+      cursor: pointer;
+    }
+    .tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 12px;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
+<div id="tooltip" class="tooltip"></div>
 <svg width="100vw" height="100vh"></svg>
 
 <script>
-  const data = { name: "Liquido a percibir", value: 0.0, children: [
-      { name: "Devengos", value: 0.5, children: [
-          { name: "Percepciones Salariales", value: 1.2, children: [
-              { name: "Salario Base", value: 1.23 },
-              { name: "Complementos Salariales", value: 0.5 }
+  const data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
+      { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
+          { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
+              { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
+              { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
             ]},
-          { name: "Otras Percepciones", value: 0.8, children: [
-              { name: "Suplidos", value: 2.45 },
-              { name: "Prestaciones SS", value: -0.75 },
-              { name: "Otras", value: -0.75 }
+          { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
+              { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
+              { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
+              { name: "Otras", value: -0.75, info: "Otras deducciones" }
             ]}
         ]},
-      { name: "Deducciones", value: -0.2, children: [
-          { name: "Seguridad Social", value: 0.9, children: [
-              { name: "Contingencias Comunes", value: 1.75 },
-              { name: "MEI", value: -0.5 }
+      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
+          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
+              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
+              { name: "MEI", value: -0.5, info: "Deducción MEI" }
             ]},
-          { name: "IRPF", value: -0.8 },
-          { name: "Otros", value: 0.0 }
+          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
+          { name: "Otros", value: 0.0, info: "Otros descuentos" }
         ]}
     ]};
 
@@ -74,13 +88,30 @@
     .attr("transform", d => `translate(${d.y}, ${d.x})`);
 
   node.append("circle").attr("class", "node-circle").attr("r", 5);
+  
+  node.append("rect").attr("class", "node-label-rect")
+    .attr("x", -40).attr("y", 10)
+    .attr("width", 80).attr("height", 40);
+  
   node.append("text").attr("class", "node-label-text")
-    .attr("x", 10).attr("y", -5)
+    .attr("x", -30).attr("y", 30)
     .text(d => d.data.name);
+  
   node.append("text").attr("class", "node-value-text")
-    .attr("x", 10).attr("y", 10)
+    .attr("x", -30).attr("y", 45)
     .attr("fill", d => d.data.value >= 0 ? "green" : "red")
     .text(d => d.data.value.toFixed(2));
+  
+  node.append("circle").attr("class", "info-circle")
+    .attr("cx", 35).attr("cy", 25).attr("r", 6)
+    .on("mouseover", (event, d) => {
+      d3.select("#tooltip")
+        .style("left", `${event.pageX + 5}px`)
+        .style("top", `${event.pageY + 5}px`)
+        .style("display", "block")
+        .text(d.data.info || "Sin información");
+    })
+    .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
 </script>
 </body>
 </html>
