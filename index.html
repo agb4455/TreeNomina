@@ -42,7 +42,20 @@
           { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
               { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
               { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
+            ]},
+          { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
+              { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
+              { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
+              { name: "Otras", value: -0.75, info: "Otras deducciones" }
             ]}
+        ]},
+      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
+          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
+              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
+              { name: "MEI", value: -0.5, info: "Deducción MEI" }
+            ]},
+          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
+          { name: "Otros", value: 0.0, info: "Otros descuentos" }
         ]}
     ]};
   const width = 2400, height = 800;
