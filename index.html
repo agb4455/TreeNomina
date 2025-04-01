@@ -23,125 +23,171 @@
     .open-modal-btn:hover { background-color: #0056b3; }
     .update-values-btn { right: 140px; background-color: #28a745; color: white; }
     .update-values-btn:hover { background-color: #218838; }
+    .modal-form { display: flex; flex-direction: column; }
+    .modal-form label { margin-bottom: 5px; color: #333; }
+    .modal-form input { margin-bottom: 10px; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+    .modal-form button { background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+    .modal-form button:hover { background-color: #0056b3; }
   </style>
 </head>
 <body>
-<button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
-<button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
-<div id="overlay" class="overlay"></div>
-<div id="myModal" class="modal">
-  <span class="close-btn" id="closeModalBtn">&times;</span>
-  <div class="modal-header">Información Modal</div>
-  <div class="modal-body">Esta es una ventana modal centrada con fondo oscurecido.</div>
-</div>
-<div id="tooltip" class="tooltip"></div>
-<svg width="100vw" height="100vh"></svg>
-<script>
-  const data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
-      { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
-          { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
-              { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
-              { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
-            ]},
-          { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
-              { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
-              { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
-              { name: "Otras", value: -0.75, info: "Otras deducciones" }
-            ]}
-        ]},
-      { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
-          { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
-              { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
-              { name: "MEI", value: -0.5, info: "Deducción MEI" }
-            ]},
-          { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
-          { name: "Otros", value: 0.0, info: "Otros descuentos" }
-        ]}
-    ]};
+  <button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
+  <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+  <div id="overlay" class="overlay"></div>
+  <div id="myModal" class="modal">
+    <span class="close-btn" id="closeModalBtn">&times;</span>
+    <div class="modal-header">Editar Salario Base</div>
+    <div class="modal-body">
+      <form class="modal-form" id="editSalaryForm">
+        <label for="salaryBaseInput">Nuevo Salario Base (€):</label>
+        <input type="number" id="salaryBaseInput" step="0.01" />
+        <button type="submit">Guardar</button>
+      </form>
+      <form class="modal-form" id="addChildForm">
+        <label for="nodeParent">Seleccione Nodo Padre:</label>
+        <select id="nodeParent">
+          <option value="Complementos Salariales">Complementos Salariales</option>
+          <option value="Suplidos">Suplidos</option>
+          <option value="Prestaciones SS">Prestaciones SS</option>
+          <option value="Otras">Otras</option>
+        </select>
+        <label for="newNodeName">Nombre del Nodo:</label>
+        <input type="text" id="newNodeName" />
+        <label for="newNodeValue">Valor del Nodo (€):</label>
+        <input type="number" id="newNodeValue" step="0.01" />
+        <button type="submit">Añadir Nodo</button>
+      </form>
+    </div>
+  </div>
+  <div id="tooltip" class="tooltip"></div>
+  <svg width="100vw" height="100vh"></svg>
 
-  const width = 2400, height = 800;
-  const svg = d3.select("svg").call(d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) => g.attr("transform", e.transform)));
-  const g = svg.append("g").attr("transform", "translate(100, 50)");
+  <script>
+    let data = { name: "Liquido a percibir", value: 0.0, info: "Información principal", children: [
+        { name: "Devengos", value: 0.5, info: "Información sobre devengos", children: [
+            { name: "Percepciones Salariales", value: 1.2, info: "Detalles sobre percepciones", children: [
+                { name: "Salario Base", value: 1.23, info: "Salario base mensual" },
+                { name: "Complementos Salariales", value: 0.5, info: "Extras salariales" }
+              ]},
+            { name: "Otras Percepciones", value: 0.8, info: "Información adicional", children: [
+                { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
+                { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
+                { name: "Otras", value: -0.75, info: "Otras deducciones" }
+              ]} 
+          ]},
+        { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
+            { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
+                { name: "Contingencias Comunes", value: 1.75, info: "Deducción por contingencias" },
+                { name: "MEI", value: -0.5, info: "Deducción MEI" }
+              ]},
+            { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
+            { name: "Otros", value: 0.0, info: "Otros descuentos" }
+          ]} 
+      ]};
 
-  const root = d3.hierarchy(data);
-  d3.tree().size([height, width])(root);
+    const width = 2400, height = 800;
+    const svg = d3.select("svg").call(d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) => g.attr("transform", e.transform)));
+    const g = svg.append("g").attr("transform", "translate(100, 50)");
 
-  g.selectAll("path.link").data(root.links()).enter().append("path").attr("class", "link").attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+    const treeLayout = d3.tree().size([height, width]);
 
-  const node = g.selectAll("g.node").data(root.descendants()).enter().append("g").attr("class", "node").attr("transform", d => `translate(${d.y}, ${d.x})`);
+    let root;
 
-  node.append("circle").attr("class", "node-circle").attr("r", 5);
-  
-  node.append("rect").attr("class", "node-label-rect")
-    .attr("x", d => -((d.data.name.length * 7) / 2))
-    .attr("y", 10)
-    .attr("width", d => d.data.name.length * 7)
-    .attr("height", 40);
+    const renderTree = () => {
+      root = d3.hierarchy(data);
+      treeLayout(root);
+      g.selectAll("*").remove(); // Limpiar el SVG antes de volver a renderizar
 
-  node.append("text").attr("class", "node-label-text")
-    .attr("x", 0).attr("y", 30)
-    .text(d => d.data.name);
+      g.selectAll("path.link").data(root.links()).enter().append("path").attr("class", "link").attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
 
-  node.append("text").attr("class", "node-value-text")
-    .attr("x", 0).attr("y", 45)
-    .attr("fill", d => d.data.value >= 0 ? "green" : "red")
-    .text(d => d.data.value.toFixed(2) + " €");  <!-- Aquí añadimos el símbolo de euro -->
+      const node = g.selectAll("g.node").data(root.descendants()).enter().append("g").attr("class", "node").attr("transform", d => `translate(${d.y}, ${d.x})`);
 
-  const infoGroup = node.append("g").attr("class", "info-group");
-  infoGroup.append("circle").attr("class", "info-circle")
-    .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
-    .attr("cy", 35).attr("r", 6)
-    .on("mouseover", (event, d) => {
-      d3.select("#tooltip")
-        .style("left", `${event.pageX + 5}px`)
-        .style("top", `${event.pageY + 5}px`)
-        .style("display", "block")
-        .text(d.data.info || "Sin información");
-    })
-    .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
-  
-  infoGroup.append("text").attr("class", "info-text")
-    .attr("x", d => (d.data.name.length * 7) / 2 + 10)
-    .attr("y", 38)
-    .text("i");
+      node.append("circle").attr("class", "node-circle").attr("r", 5);
+      
+      node.append("rect").attr("class", "node-label-rect")
+        .attr("x", d => -((d.data.name.length * 7) / 2))
+        .attr("y", 10)
+        .attr("width", d => d.data.name.length * 7)
+        .attr("height", 40);
 
-  function calcularSumaValores(nodo) {
-    if (!nodo.children) return nodo.data.value;
-    nodo.data.value = nodo.children.reduce((sum, child) => sum + calcularSumaValores(child), 0);
-    return nodo.data.value;
-  }
+      node.append("text").attr("class", "node-label-text")
+        .attr("x", 0).attr("y", 30)
+        .text(d => d.data.name);
 
-  function calcularSumaHijosRaiz(root) {
-    let suma = 0;
-    root.children.forEach(child => {
-      suma += calcularSumaValores(child);  // Solo sumamos los valores de los hijos inmediatos
+      node.append("text").attr("class", "node-value-text")
+        .attr("x", 0).attr("y", 45)
+        .attr("fill", d => d.data.value >= 0 ? "green" : "red")
+        .text(d => d.data.value.toFixed(2) + " €");
+
+      const infoGroup = node.append("g").attr("class", "info-group");
+      infoGroup.append("circle").attr("class", "info-circle")
+        .attr("cx", d => (d.data.name.length * 7) / 2 + 10)
+        .attr("cy", 35).attr("r", 6)
+        .on("mouseover", (event, d) => {
+          d3.select("#tooltip")
+            .style("left", `${event.pageX + 5}px`)
+            .style("top", `${event.pageY + 5}px`)
+            .style("display", "block")
+            .text(d.data.info || "Sin información");
+        })
+        .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+    };
+
+    // Función para abrir el modal
+    function abrirModal() {
+      const salarioBase = root.descendants().find(d => d.data.name === "Salario Base");
+      if (salarioBase) {
+        document.getElementById("salaryBaseInput").value = salarioBase.data.value.toFixed(2);
+      }
+      document.getElementById("overlay").style.display = "block";
+      document.getElementById("myModal").style.display = "block";
+    }
+
+    // Función para guardar el valor actualizado del salario base
+    document.getElementById("editSalaryForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const nuevoSalarioBase = parseFloat(document.getElementById("salaryBaseInput").value);
+      const salarioBaseNode = root.descendants().find(d => d.data.name === "Salario Base");
+      if (salarioBaseNode) {
+        salarioBaseNode.data.value = nuevoSalarioBase;
+      }
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("myModal").style.display = "none";
+      renderTree(); // Volver a renderizar el árbol
     });
-    return suma;
-  }
 
-  document.getElementById("updateValuesBtn").addEventListener("click", () => {
-    // Primero, calculamos y actualizamos la suma de los nodos desde "Devengos" hacia abajo
-    const nodoDevengos = root.descendants().find(n => n.data.name === "Devengos");
-    if (nodoDevengos) calcularSumaValores(nodoDevengos);
+    // Función para añadir un nuevo nodo hijo
+    document.getElementById("addChildForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const parentNodeName = document.getElementById("nodeParent").value;
+      const newNodeName = document.getElementById("newNodeName").value;
+      const newNodeValue = parseFloat(document.getElementById("newNodeValue").value);
 
-    // Luego, sumamos los valores de los hijos inmediatos del nodo raíz "Liquido a percibir"
-    const sumaHijosRaiz = calcularSumaHijosRaiz(root);
-    root.data.value = sumaHijosRaiz;  // Actualizamos el valor del nodo raíz
+      const parentNode = data.children.find(d => d.name === parentNodeName);
+      if (parentNode) {
+        parentNode.children = parentNode.children || [];
+        parentNode.children.push({
+          name: newNodeName,
+          value: newNodeValue,
+          info: "Nuevo nodo añadido"
+        });
+      }
 
-    // Finalmente, actualizamos los valores de todos los nodos en la visualización
-    g.selectAll(".node-value-text").text(d => d.data.value.toFixed(2) + " €")
-      .attr("fill", d => d.data.value >= 0 ? "green" : "red");
-  });
+      // Volver a renderizar el árbol con los datos actualizados
+      renderTree();
 
-  document.getElementById("openModalBtn").addEventListener("click", () => {
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById("myModal").style.display = "block";
-  });
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("myModal").style.display = "none";
+    });
 
-  document.getElementById("closeModalBtn").addEventListener("click", () => {
-    document.getElementById("overlay").style.display = "none";
-    document.getElementById("myModal").style.display = "none";
-  });
-</script>
+    document.getElementById("openModalBtn").addEventListener("click", abrirModal);
+
+    document.getElementById("closeModalBtn").addEventListener("click", () => {
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("myModal").style.display = "none";
+    });
+
+    renderTree(); // Renderizar el árbol inicialmente
+  </script>
 </body>
 </html>
