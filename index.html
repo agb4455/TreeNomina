@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Árbol Dinámico con Zoom y Modal</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body>
-  <button class="open-modal-btn" id="openModalBtn">Abrir Modal</button>
-  <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
-  <div id="overlay" class="overlay"></div>
-  <div id="myModal" class="modal">
-    <span class="close-btn" id="closeModalBtn">×</span>
-    <div class="modal-header">Editar Valores</div>
-    <div class="modal-body">
-      <form class="modal-form" id="editSalaryForm">
-        <label for="salaryBaseInput">Nuevo Salario Base (€):</label>
-        <input type="number" id="salaryBaseInput" step="0.01" min="0" required />
-        <button type="submit">Guardar Salario Base</button>
-      </form>
-      <form class="modal-form" id="editIrpfForm">
-        <label for="irpfInput">Porcentaje IRPF (%):</label>
-        <input type="number" id="irpfInput" step="0.01" min="0" required />
-        <button type="submit">Guardar Porcentaje IRPF</button>
-      </form>
-      <form class="modal-form" id="addChildForm">
-        <label for="nodeParent">Seleccione Nodo Padre:</label>
-        <select id="nodeParent">
-          <option value="Complementos Salariales">Complementos Salariales</option>
-          <option value="Suplidos">Suplidos</option>
-          <option value="Prestaciones SS">Prestaciones SS</option>
-          <option value="Otras">Otras</option>
-        </select>
-        <label for="newNodeName">Nombre del Nodo:</label>
-        <input type="text" id="newNodeName" required />
-        <label for="newNodeValue">Valor del Nodo (€):</label>
-        <input type="number" id="newNodeValue" step="0.01" min="0" required />
-        <button type="submit">Añadir Nodo</button>
-      </form>
+  <head>
+    <meta charset="UTF-8">
+    <title>Árbol Dinámico con Zoom y Modal</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <button class="open-modal-btn" id="openModalBtn">Modificar Nomina</button>
+    <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+    <div id="overlay" class="overlay"></div>
+    <div id="myModal" class="modal">
+      <span class="close-btn" id="closeModalBtn">×</span>
+      <div class="modal-header">Editar Valores</div>
+      <div class="modal-body">
+        <form class="modal-form" id="editSalaryForm">
+          <label for="salaryBaseInput">Nuevo Salario Base (€):</label>
+          <input type="number" id="salaryBaseInput" step="0.01" min="0" required />
+          <button type="submit">Guardar Salario Base</button>
+        </form>
+        <form class="modal-form" id="editIrpfForm">
+          <label for="irpfInput">Porcentaje IRPF (%):</label>
+          <input type="number" id="irpfInput" step="0.01" min="0" required />
+          <button type="submit">Guardar Porcentaje IRPF</button>
+        </form>
+        <form class="modal-form" id="editSSForm">
+          <label for="SSInput">Porcentaje SS (%):</label>
+          <input type="number" id="SSInput" step="0.01" min="0" required />
+          <button type="submit">Guardar Porcentaje IRPF</button>
+        </form>
+        <form class="modal-form" id="addChildForm">
+          <label for="nodeParent">Seleccione Nodo Padre:</label>
+          <select id="nodeParent">
+            <option value="Complementos Salariales">Complementos Salariales</option>
+            <option value="Suplidos">Suplidos</option>
+            <option value="Prestaciones SS">Prestaciones SS</option>
+            <option value="Otras">Otras</option>
+          </select>
+          <label for="newNodeName">Nombre del Nodo:</label>
+          <input type="text" id="newNodeName" required />
+          <label for="newNodeValue">Valor del Nodo (€):</label>
+          <input type="number" id="newNodeValue" step="0.01" min="0" required />
+          <button type="submit">Añadir Nodo</button>
+        </form>
+      </div>
     </div>
-  </div>
-  <div id="tooltip" class="tooltip"></div>
-  <svg width="100vw" height="100vh"></svg>
+    <div id="tooltip" class="tooltip"></div>
+    <svg width="100vw" height="100vh"></svg>
 
-  <!-- Cargar los scripts en orden: primero los datos, luego la lógica -->
-  <script src="data.js"></script>
-  <script src="script.js"></script>
-</body>
+    <!-- Cargar los scripts en orden: primero los datos, luego la lógica -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>

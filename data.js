@@ -18,19 +18,19 @@ const data = {
             isContingenciaProfesional: false,
             children: [
               { name: "Salario Base", value: 0.0, info: "Salario base mensual", canBeDeleted: false, isContingenciaProfesional: false },
-              { name: "Complementos Salariales", value: 0.0, info: "Extras salariales", canBeDeleted: true, isContingenciaProfesional: false }
+              { name: "Complementos Salariales", value: 0.0, info: "Extras salariales", canBeDeleted: false, isContingenciaProfesional: false }
             ]
           },
           {
             name: "Otras Percepciones",
             value: 0.0,
             info: "Información adicional",
-            canBeDeleted: true,
+            canBeDeleted: false,
             isContingenciaProfesional: false,
             children: [
-              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados", canBeDeleted: true, isContingenciaProfesional: false },
+              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados", canBeDeleted: false, isContingenciaProfesional: false },
               { name: "Prestaciones SS", value: 0.0, info: "Deducción por SS", canBeDeleted: false, isContingenciaProfesional: true },
-              { name: "Otras", value: 0.0, info: "Otras deducciones", canBeDeleted: true, isContingenciaProfesional: false }
+              { name: "Otras", value: 0.0, info: "Otras deducciones", canBeDeleted: false, isContingenciaProfesional: false }
             ]
           }
         ]

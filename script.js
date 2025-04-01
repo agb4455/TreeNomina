@@ -1,5 +1,6 @@
 // Variable global porIrpf
 let porIrpf = 0.0;
+let porSS = 0.0;
 
 const width = 2400, height = 800;
 const svg = d3.select("svg").call(d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) => g.attr("transform", e.transform)));
@@ -126,6 +127,19 @@ document.getElementById("editSalaryForm").addEventListener("submit", (event) => 
 });
 
 // Guardar el valor actualizado de porIrpf
+document.getElementById("editSSForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const nuevoPorSS = parseFloat(document.getElementById("SSInput").value);
+  if (isNaN(nuevoPorSS)) {
+    alert("Por favor, introduce un valor numérico válido para el porcentaje de la SS.");
+    return;
+  }
+  porSS = nuevoPorSS;
+  //document.getElementById("overlay").style.display = "none";
+  //document.getElementById("myModal").style.display = "none";
+});
+
+// Guardar el valor actualizado de porIrpf
 document.getElementById("editIrpfForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const nuevoPorIrpf = parseFloat(document.getElementById("irpfInput").value);
@@ -134,8 +148,8 @@ document.getElementById("editIrpfForm").addEventListener("submit", (event) => {
     return;
   }
   porIrpf = nuevoPorIrpf;
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("myModal").style.display = "none";
+  //document.getElementById("overlay").style.display = "none";
+  //document.getElementById("myModal").style.display = "none";
 });
 
 // Añadir un nuevo nodo hijo
