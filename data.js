@@ -1,7 +1,7 @@
 const data = {
     name: "Liquido a percibir",
     value: 0.0,
-    info: "Información principal",
+    info: "El salario que se le va a ingresar en cuenta al trabajador",
     children: [
       {
         name: "Devengos",
