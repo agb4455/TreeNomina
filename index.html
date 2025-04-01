@@ -9,7 +9,7 @@
     .link { fill: none; stroke: #6c757d; stroke-width: 2px; }
     .node-label-rect { fill: #2d2d2d; stroke: #2d2d2d; rx: 6; ry: 6; }
     .node-label-text { fill: #f8f9fa; font-size: 12px; font-weight: 600; text-anchor: middle; }
-    .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; cursor: pointer; }
+    .node-value-text { font-size: 12px; font-weight: bold; text-anchor: middle; }
     .node-circle { fill: #f1c40f; }
     .info-circle { fill: #d3d3d3; cursor: pointer; }
     .info-text { fill: black; font-size: 10px; font-weight: bold; text-anchor: middle; }
@@ -23,7 +23,6 @@
     .open-modal-btn:hover { background-color: #0056b3; }
     .update-values-btn { right: 140px; background-color: #28a745; color: white; }
     .update-values-btn:hover { background-color: #218838; }
-    .input-edit { font-size: 12px; font-weight: bold; width: 60px; text-align: center; }
   </style>
 </head>
 <body>
@@ -48,7 +47,7 @@
               { name: "Suplidos", value: 2.45, info: "Gastos reembolsados" },
               { name: "Prestaciones SS", value: -0.75, info: "Deducción por SS" },
               { name: "Otras", value: -0.75, info: "Otras deducciones" }
-            ]} 
+            ]}
         ]},
       { name: "Deducciones", value: -0.2, info: "Deducciones aplicadas", children: [
           { name: "Seguridad Social", value: 0.9, info: "Pago a la seguridad social", children: [
@@ -57,7 +56,7 @@
             ]},
           { name: "IRPF", value: -0.8, info: "Impuesto sobre la renta" },
           { name: "Otros", value: 0.0, info: "Otros descuentos" }
-        ]} 
+        ]}
     ]};
 
   const width = 2400, height = 800;
@@ -86,30 +85,7 @@
   node.append("text").attr("class", "node-value-text")
     .attr("x", 0).attr("y", 45)
     .attr("fill", d => d.data.value >= 0 ? "green" : "red")
-    .text(d => d.data.value.toFixed(2) + " €")
-    .on("click", function(event, d) {
-      if (d.data.name === "Salario Base" || d.data.name.startsWith("Percepciones Salariales") || d.data.name.startsWith("Suplidos")) {
-        // Abrir el cuadro de entrada para editar el valor
-        const input = d3.select(this).append("foreignObject")
-          .attr("x", -30)
-          .attr("y", 30)
-          .attr("width", 60)
-          .attr("height", 20)
-          .append("xhtml:input")
-          .attr("type", "number")
-          .attr("value", d.data.value.toFixed(2))
-          .attr("class", "input-edit")
-          .on("blur", function() {
-            const newValue = parseFloat(this.value);
-            if (!isNaN(newValue)) {
-              d.data.value = newValue;
-              d3.select(this.parentNode).remove(); // Eliminar el input después de editar
-              actualizarValores();
-            }
-          });
-        input.node().focus();
-      }
-    });
+    .text(d => d.data.value.toFixed(2) + " €");  <!-- Aquí añadimos el símbolo de euro -->
 
   const infoGroup = node.append("g").attr("class", "info-group");
   infoGroup.append("circle").attr("class", "info-circle")
@@ -129,10 +105,33 @@
     .attr("y", 38)
     .text("i");
 
-  function actualizarValores() {
+  function calcularSumaValores(nodo) {
+    if (!nodo.children) return nodo.data.value;
+    nodo.data.value = nodo.children.reduce((sum, child) => sum + calcularSumaValores(child), 0);
+    return nodo.data.value;
+  }
+
+  function calcularSumaHijosRaiz(root) {
+    let suma = 0;
+    root.children.forEach(child => {
+      suma += calcularSumaValores(child);  // Solo sumamos los valores de los hijos inmediatos
+    });
+    return suma;
+  }
+
+  document.getElementById("updateValuesBtn").addEventListener("click", () => {
+    // Primero, calculamos y actualizamos la suma de los nodos desde "Devengos" hacia abajo
+    const nodoDevengos = root.descendants().find(n => n.data.name === "Devengos");
+    if (nodoDevengos) calcularSumaValores(nodoDevengos);
+
+    // Luego, sumamos los valores de los hijos inmediatos del nodo raíz "Liquido a percibir"
+    const sumaHijosRaiz = calcularSumaHijosRaiz(root);
+    root.data.value = sumaHijosRaiz;  // Actualizamos el valor del nodo raíz
+
+    // Finalmente, actualizamos los valores de todos los nodos en la visualización
     g.selectAll(".node-value-text").text(d => d.data.value.toFixed(2) + " €")
       .attr("fill", d => d.data.value >= 0 ? "green" : "red");
-  }
+  });
 
   document.getElementById("openModalBtn").addEventListener("click", () => {
     document.getElementById("overlay").style.display = "block";
