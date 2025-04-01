@@ -1,24 +1,30 @@
 const data = {
     name: "Liquido a percibir",
     value: 0.0,
-    info: "El salario que se le va a ingresar en cuenta al trabajador",
+    info: "El líquido a percibir es el dinero neto que un empleado recibe tras aplicar todas las deducciones al salario bruto. Esto incluye restar impuestos (como el IRPF en España), cotizaciones a la seguridad social y otros posibles descuentos, como anticipos o aportaciones sindicales",
     children: [
       {
         name: "Devengos",
         value: 0.0,
-        info: "Información sobre devengos",
+        info: "En el ámbito de las nóminas, los devengos son los importes que el empleado genera o tiene derecho a percibir antes de cualquier deducción. Incluyen el salario base, complementos (como antigüedad, nocturnidad o productividad), horas extras, pagas extraordinarias o incentivos",
         canBeDeleted: false,
         isContingenciaProfesional: false,
         children: [
           {
             name: "Percepciones Salariales",
             value: 0.0,
-            info: "Detalles sobre percepciones",
+            info: "Las percepciones salariales en una nómina son todos los ingresos que un empleado recibe por su trabajo, formando parte de los devengos. Incluyen el salario base (fijo por el contrato), complementos (como antigüedad, turnos o peligrosidad), horas extras, bonificaciones o pagas extras.",
             canBeDeleted: false,
             isContingenciaProfesional: false,
             children: [
-              { name: "Salario Base", value: 0.0, info: "Salario base mensual", canBeDeleted: false, isContingenciaProfesional: false },
-              { name: "Complementos Salariales", value: 0.0, info: "Extras salariales", canBeDeleted: false, isContingenciaProfesional: false }
+              { name: "Salario Base", value: 0.0,
+                 info: "El salario base en una nómina es la cantidad fija que un empleado recibe por su trabajo, establecida por su contrato o convenio colectivo. Es el núcleo del salario bruto y no incluye pagos adicionales como bonificaciones, horas extras o complementos. El SMI en España es de 1148€",
+                 canBeDeleted: false, isContingenciaProfesional: false
+              },
+              { name: "Complementos Salariales", value: 0.0, 
+                info: "Los complementos salariales en una nómina son cantidades adicionales al salario base que un empleado recibe por circunstancias específicas relacionadas con su trabajo. Incluyen conceptos como antigüedad (por años de servicio), turnos (nocturnidad o festivos), peligrosidad, productividad, o idiomas, según el convenio colectivo o contrato",
+                canBeDeleted: false, isContingenciaProfesional: false 
+              }
             ]
           },
           {

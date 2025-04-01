@@ -40,14 +40,17 @@ body {
     font-weight: bold; 
     text-anchor: middle; 
   }
-  .tooltip { 
-    position: absolute; 
-    background: rgba(0, 0, 0, 0.8); 
-    color: white; 
-    padding: 5px; 
-    border-radius: 5px; 
-    font-size: 12px; 
-    display: none; 
+  .tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    display: none;
+    max-width: 200px;  /* Ancho máximo del tooltip */
+    white-space: normal;  /* Permite que el texto se envuelva */
+    text-align: left;  /* Alinea el texto a la izquierda */
   }
   .overlay { 
     display: none; 
