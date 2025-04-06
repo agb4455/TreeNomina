@@ -1,6 +1,11 @@
 // Variable global porIrpf
 let porIrpf = 0.0;
 let porSS = 0.0;
+let CAAA = 0.0;
+let CAAAP = 0.0;
+let CAHE = 0.0; 
+let extra = 0.0;
+let thisMoth = false;
 
 const width = 2400, height = 800;
 const svg = d3.select("svg").call(d3.zoom().scaleExtent([0.5, 2]).on("zoom", (e) => g.attr("transform", e.transform)));
@@ -58,6 +63,8 @@ const renderTree = () => {
         .text(d.data.info || "Sin información");
     })
     .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+
+    updateValues();
 };
 
 // Función para eliminar un nodo
@@ -66,10 +73,12 @@ function deleteNode(node) {
   if (parent) {
     const index = parent.data.children.findIndex(child => child.name === node.data.name);
     if (index !== -1) {
+      node.parent.data.value -= node.data.value; // Restar el valor del nodo eliminado al padre;
       parent.data.children.splice(index, 1);
-      renderTree(); // Volver a renderizar el árbol
     }
   }
+  updateValues(); // Volver a renderizar el árbol después de eliminar el nodo
+  renderTree();
 }
 
 // Función para buscar un nodo por nombre en el árbol
@@ -105,9 +114,43 @@ function abrirModal() {
     document.getElementById("salaryBaseInput").value = salarioBase.data.value.toFixed(2);
   }
   document.getElementById("irpfInput").value = porIrpf.toFixed(2); // Mostrar valor actual de porIrpf
+  document.getElementById("SSInput").value = porSS.toFixed(2); // Mostrar valor actual de porSS
+  document.getElementById("extraInput").value = extra.toFixed(2); // Mostrar valor actual de extra
+  document.getElementById("extraCheckbox").checked = thisMoth; // Mostrar valor actual de thisMoth
   document.getElementById("overlay").style.display = "block";
   document.getElementById("myModal").style.display = "block";
 }
+
+// Guardar el valor actualizado de porIrpf
+document.getElementById("editExtraForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const nuevoExtra = parseFloat(document.getElementById("extraInput").value);
+  const moth = parseBool(document.getElementById("extraCheckbox").value);
+
+  if (isNaN(nuevoExtra)) {
+    alert("Por favor, introduce un valor numérico válido para las pagas extras.");
+    return;
+  }
+
+  extra = nuevoExtra;
+  thisMoth = moth;
+
+  if(moth){
+    const no = findNodeByName(data, "Complementos Salariales");
+    no.children = no.children || [];
+    no.children.push({
+      name: "Pagas Extra",
+      value: extra,
+      info: "Dinero Percibido por la paga extra, normalmente 2 al año, una en junio y otra en diciembre",
+      canBeDeleted: false, // Por defecto, los nuevos nodos pueden ser eliminados
+    });
+    renderTree();
+  }
+
+  
+  //document.getElementById("overlay").style.display = "none";
+  //document.getElementById("myModal").style.display = "none";
+});
 
 // Guardar el valor actualizado del salario base
 document.getElementById("editSalaryForm").addEventListener("submit", (event) => {
@@ -184,43 +227,81 @@ document.getElementById("addChildForm").addEventListener("submit", (event) => {
   } else {
     alert("Nodo padre no encontrado.");
   }
+  renderTree();
 });
 
 // Actualizar valores al pulsar el botón "Actualizar"
 document.getElementById("updateValuesBtn").addEventListener("click", () => {
-  // Paso 1: Actualizar "Devengos" recursivamente
-  const devengosNode = findNodeByName(data, "Devengos");
-  if (devengosNode) {
-    updateFromNode(devengosNode);
-  } else {
-    console.error("Nodo 'Devengos' no encontrado");
-  }
-
-  // Paso 2: Calcular "IRPF" basado en "Devengos" y "porIrpf"
-  const irpfNode = findNodeByName(data, "IRPF");
-  if (irpfNode && devengosNode) {
-    irpfNode.value = - (devengosNode.value * (porIrpf / 100)); // Deducción IRPF (negativo)
-  } else {
-    console.error("Nodo 'IRPF' o 'Devengos' no encontrado");
-  }
-
-  // Paso 3: Actualizar "Deducciones" sumando sus hijos (incluyendo el nuevo "IRPF")
-  const deduccionesNode = findNodeByName(data, "Deducciones");
-  if (deduccionesNode) {
-    updateFromNode(deduccionesNode);
-  } else {
-    console.error("Nodo 'Deducciones' no encontrado");
-  }
-
-  // Paso 4: Actualizar la raíz sumando sus hijos directos
-  data.value = data.children.reduce((sum, child) => sum + child.value, 0);
-
-  // Renderizar el árbol con los valores actualizados
   renderTree();
-});
+} );
+
+function updateCAAA(){
+  const val = parseFloat(sumRec(findNodeByName(data, "Devengos"))) - parseFloat((findNodeByName(data, "Horas extra")).data.value);
+  if(findNodeByName(data, "Pagas Extra")){
+    val += findNodeByName(data, "Pagas Extra").data.value;
+  }
+  CAAA = val;
+}
+
+function updateCAAP(){
+  CAAP = CAAA + findNodeByName(data, "Horas extra").data.value;
+}
+
+function updateCAHE(){
+  CAHE = findNodeByName(data, "Horas extra").data.value;
+}
+
+function sumRec(node){
+  let sum = 0.0;
+  if (node.children) {
+    for (let child of node.children) {
+      sum += sumRec(child);
+    }
+  } else {
+    sum = node.value;
+  }
+  return sum;
+}
+
+function updateValues() {
+    // Paso 1: Actualizar "Devengos" recursivamente FINALIZADO
+    const devengosNode = findNodeByName(data, "Devengos");
+    if (devengosNode) {
+      updateFromNode(devengosNode);
+    } else {
+      console.error("Nodo 'Devengos' no encontrado");
+    }
+
+    updateCAAA();
+    updateCAAP();
+    updateCAHE();
+  
+    // Paso 2: Calcular "IRPF" basado en "Devengos" y "porIrpf"
+    const irpfNode = findNodeByName(data, "IRPF");
+    if (irpfNode && devengosNode) {
+      irpfNode.value = - (devengosNode.value * (porIrpf / 100)); // Deducción IRPF (negativo)
+    } else {
+      console.error("Nodo 'IRPF' o 'Devengos' no encontrado");
+    }
+  
+    // Paso 3: Actualizar "Deducciones" sumando sus hijos (incluyendo el nuevo "IRPF")
+    const deduccionesNode = findNodeByName(data, "Deducciones");
+    if (deduccionesNode) {
+      updateFromNode(deduccionesNode);
+    } else {
+      console.error("Nodo 'Deducciones' no encontrado");
+    }
+  
+    // Paso 4: Actualizar la raíz sumando sus hijos directos
+    data.value = data.children.reduce((sum, child) => sum + child.value, 0);
+  
+    // Renderizar el árbol con los valores actualizados
+    //renderTree();
+};
 
 // Eventos para abrir y cerrar el modal
 document.getElementById("openModalBtn").addEventListener("click", abrirModal);
+
 document.getElementById("closeModalBtn").addEventListener("click", () => {
   document.getElementById("overlay").style.display = "none";
   document.getElementById("myModal").style.display = "none";

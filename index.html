@@ -19,6 +19,14 @@
           <input type="number" id="salaryBaseInput" step="0.01" min="0" required />
           <button type="submit">Guardar Salario Base</button>
         </form>
+
+        <form class="modal-form" id="editExtraForm">
+          <label for="extraInput">Dinero Percibido en las extras (€):</label>
+          <input type="number" id="extraInput" step="0.01" min="0" required />
+          <input type = "checkbox" id="extraCheckbox" /> <label for="extraCheckbox">¿Este Mes?</label>
+          <button type="submit">Guardar Valor de las Extras</button>
+        </form>
+        
         <form class="modal-form" id="editIrpfForm">
           <label for="irpfInput">Porcentaje IRPF (%):</label>
           <input type="number" id="irpfInput" step="0.01" min="0" required />
