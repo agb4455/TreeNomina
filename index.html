@@ -7,8 +7,10 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
   <body>
-    <button class="open-modal-btn" id="openModalBtn">Modificar Nomina</button>
-    <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+    <div id="topButtons">
+      <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+      <button class="open-modal-btn" id="openModalBtn">Modificar Nomina</button>
+    </div>
     <div id="overlay" class="overlay"></div>
     <div id="myModal" class="modal">
       <span class="close-btn" id="closeModalBtn">×</span>
@@ -23,20 +25,23 @@
         <form class="modal-form" id="editExtraForm">
           <label for="extraInput">Dinero Percibido en las extras (€):</label>
           <input type="number" id="extraInput" step="0.01" min="0" required />
-          <input type = "checkbox" id="extraCheckbox" /> <label for="extraCheckbox">¿Este Mes?</label>
+          <input type="checkbox" id="extraCheckbox" /> 
+          <label for="extraCheckbox">¿Este Mes?</label>
           <button type="submit">Guardar Valor de las Extras</button>
         </form>
-        
+
         <form class="modal-form" id="editIrpfForm">
           <label for="irpfInput">Porcentaje IRPF (%):</label>
           <input type="number" id="irpfInput" step="0.01" min="0" required />
           <button type="submit">Guardar Porcentaje IRPF</button>
         </form>
-        <form class="modal-form" id="editSSForm">
-          <label for="SSInput">Porcentaje SS (%):</label>
-          <input type="number" id="SSInput" step="0.01" min="0" required />
-          <button type="submit">Guardar Porcentaje SS</button>
+        
+        <form class="modal-form" id="editHEForm">
+          <label for="HEInput">Inserte el valor de las HE (€): </label>
+          <input type="number" id="HEInput" step="0.01" min="0" required />
+          <button type="submit">Guardar Horas Extra</button>
         </form>
+        
         <form class="modal-form" id="addChildForm">
           <label for="nodeParent">Seleccione Nodo Padre:</label>
           <select id="nodeParent">

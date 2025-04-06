@@ -126,12 +126,42 @@ function abrirModal() {
     document.getElementById("salaryBaseInput").value = salarioBase.data.value.toFixed(2);
   }
   document.getElementById("irpfInput").value = porIrpf.toFixed(2); // Mostrar valor actual de porIrpf
-  document.getElementById("SSInput").value = porSS.toFixed(2); // Mostrar valor actual de porSS
+  //document.getElementById("SSInput").value = porSS.toFixed(2); // Mostrar valor actual de porSS
   document.getElementById("extraInput").value = extra.toFixed(2); // Mostrar valor actual de extra
   document.getElementById("extraCheckbox").checked = thisMoth; // Mostrar valor actual de thisMoth
   document.getElementById("overlay").style.display = "block";
   document.getElementById("myModal").style.display = "block";
 }
+
+// Guardar el valor actualizado de porIrpf
+document.getElementById("editHEForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const HEVal = parseFloat(document.getElementById("HEInput").value);
+  let pos = (HEVal !== 0);
+  console.log(pos);
+
+  if(pos === true && findNodeByName(data, "Horas extra") === null){
+    const no = findNodeByName(data, "Complementos Salariales");
+    no.children = no.children || [];
+    no.children.push({
+      name: "Horas extra",
+      value: HEVal,
+      info: "Horas extra trabajadas",
+      canBeDeleted: false, // Por defecto, los nuevos nodos pueden ser eliminados
+    });
+  }else if (pos === true && findNodeByName(data, "Horas extra") !== null) {
+    const no = findNodeByName(data, "Horas extra");
+    no.value = HEVal;
+  }else if(pos === false){
+    console.log("El nodo 'Pagas Extra' se va a eliminar");
+    deleteNode(findNodeInRootByName(root,"Horas extra"));
+  }
+  updateValues();
+  renderTree();
+  
+  //document.getElementById("overlay").style.display = "none";
+  //document.getElementById("myModal").style.display = "none";
+});
 
 // Guardar el valor actualizado de porIrpf
 document.getElementById("editExtraForm").addEventListener("submit", (event) => {
@@ -183,9 +213,10 @@ document.getElementById("editSalaryForm").addEventListener("submit", (event) => 
   }
   document.getElementById("overlay").style.display = "none";
   document.getElementById("myModal").style.display = "none";
+  updateValues();
   renderTree();
 });
-
+/**
 // Guardar el valor actualizado de porIrpf
 document.getElementById("editSSForm").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -198,6 +229,7 @@ document.getElementById("editSSForm").addEventListener("submit", (event) => {
   //document.getElementById("overlay").style.display = "none";
   //document.getElementById("myModal").style.display = "none";
 });
+*/
 
 // Guardar el valor actualizado de porIrpf
 document.getElementById("editIrpfForm").addEventListener("submit", (event) => {
@@ -260,7 +292,10 @@ function updateCAAA(){
   const horasExtraValue = horasExtraNode ? parseFloat(horasExtraNode.value) : 0;
   
   let val = devengosSum - horasExtraValue;
-  
+  if(thisMoth === true){
+    val -= findNodeByName(data, "Pagas Extra").value;
+  }
+  val += (extra*2)/12;
   CAAA = val;
 }
 
