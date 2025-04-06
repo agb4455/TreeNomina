@@ -82,6 +82,18 @@ function deleteNode(node) {
 }
 
 // Función para buscar un nodo por nombre en el árbol
+function findNodeInRootByName( name) {
+  if (root.data.name === name) return node;
+  if (root.children) {
+    for (let child of node.children) {
+      const found = findNodeByName(child, name);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// Función para buscar un nodo por nombre en el árbol
 function findNodeByName(node, name) {
   if (node.name === name) return node;
   if (node.children) {
@@ -125,7 +137,9 @@ function abrirModal() {
 document.getElementById("editExtraForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const nuevoExtra = parseFloat(document.getElementById("extraInput").value);
-  const moth = parseBool(document.getElementById("extraCheckbox").value);
+  const moth = (document.getElementById("extraCheckbox").checked);
+
+  console.log(moth);
 
   if (isNaN(nuevoExtra)) {
     alert("Por favor, introduce un valor numérico válido para las pagas extras.");
@@ -135,7 +149,7 @@ document.getElementById("editExtraForm").addEventListener("submit", (event) => {
   extra = nuevoExtra;
   thisMoth = moth;
 
-  if(moth){
+  if(thisMoth === true && findNodeByName(data, "Pagas Extra") === null){
     const no = findNodeByName(data, "Complementos Salariales");
     no.children = no.children || [];
     no.children.push({
@@ -144,9 +158,12 @@ document.getElementById("editExtraForm").addEventListener("submit", (event) => {
       info: "Dinero Percibido por la paga extra, normalmente 2 al año, una en junio y otra en diciembre",
       canBeDeleted: false, // Por defecto, los nuevos nodos pueden ser eliminados
     });
-    renderTree();
+  }else if(thisMoth === false){
+    console.log("El nodo 'Pagas Extra' se va a eliminar");
+    deleteNode(findNodeInRootByName("Pagas Extra"));
   }
-
+  updateValues();
+  renderTree();
   
   //document.getElementById("overlay").style.display = "none";
   //document.getElementById("myModal").style.display = "none";
@@ -236,19 +253,26 @@ document.getElementById("updateValuesBtn").addEventListener("click", () => {
 } );
 
 function updateCAAA(){
-  const val = parseFloat(sumRec(findNodeByName(data, "Devengos"))) - parseFloat((findNodeByName(data, "Horas extra")).data.value);
-  if(findNodeByName(data, "Pagas Extra")){
-    val += findNodeByName(data, "Pagas Extra").data.value;
-  }
+  const devengosNode = findNodeByName(data, "Devengos");
+  const horasExtraNode = findNodeByName(data, "Horas extra");
+
+  const devengosSum = devengosNode ? parseFloat(sumRec(devengosNode)) : 0;
+  const horasExtraValue = horasExtraNode ? parseFloat(horasExtraNode.value) : 0;
+  
+  let val = devengosSum - horasExtraValue;
+  
   CAAA = val;
 }
 
 function updateCAAP(){
-  CAAP = CAAA + findNodeByName(data, "Horas extra").data.value;
+  const horasExtraNode = findNodeByName(data, "Horas extra");
+  const horasExtraValue = horasExtraNode ? parseFloat(horasExtraNode.value) : 0;
+  CAAP = CAAA + horasExtraValue;
 }
 
 function updateCAHE(){
-  CAHE = findNodeByName(data, "Horas extra").data.value;
+  const horasExtraNode = findNodeByName(data, "Horas extra");
+  CAHE = horasExtraNode ? parseFloat(horasExtraNode.value) : 0;
 }
 
 function sumRec(node){
