@@ -174,3 +174,39 @@ body {
   font-weight: bold; 
   margin-bottom: 15px; 
 }
+
+/* Estilos para la tabla de datos */
+
+
+.body-pdf {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  margin: 40px;
+  color: #000;
+}
+.table-pdf {
+  width: 100%;
+  border-collapse: collapse;
+}
+.td-pdf, .th-pdf {
+  border: 1px solid black;
+  padding: 4px;
+  vertical-align: top;
+}
+.section-title {
+  background-color: #e5e5e5;
+  font-weight: bold;
+  text-align: center;
+}
+.no-border {
+  border: none;
+}
+.center {
+  text-align: center;
+}
+.bold {
+  font-weight: bold;
+}
+.gray-bg {
+  background-color: #f2f2f2;
+}

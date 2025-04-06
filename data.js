@@ -24,6 +24,7 @@ const data = {
               { name: "Complementos Salariales", value: 0.0, 
                 info: "Los complementos salariales en una nómina son cantidades adicionales al salario base que un empleado recibe por circunstancias específicas relacionadas con su trabajo. Incluyen conceptos como antigüedad (por años de servicio), turnos (nocturnidad o festivos), peligrosidad, productividad, o idiomas, según el convenio colectivo o contrato",
                 canBeDeleted: false, isContingenciaProfesional: false,
+                children: []
               }
             ]
           },
