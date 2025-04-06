@@ -35,9 +35,9 @@ const data = {
             canBeDeleted: false,
             isContingenciaProfesional: false,
             children: [
-              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados", canBeDeleted: false, isContingenciaProfesional: false },
-              { name: "Prestaciones SS", value: 0.0, info: "Deducción por SS", canBeDeleted: false, isContingenciaProfesional: true },
-              { name: "Otras", value: 0.0, info: "Otras deducciones", canBeDeleted: false, isContingenciaProfesional: false }
+              { name: "Suplidos", value: 0.0, info: "Gastos reembolsados", canBeDeleted: false, isContingenciaProfesional: false,children: [] },
+              { name: "Prestaciones SS", value: 0.0, info: "Deducción por SS", canBeDeleted: false, isContingenciaProfesional: true,children: [] },
+              { name: "Otras", value: 0.0, info: "Otras deducciones", canBeDeleted: false, isContingenciaProfesional: false, children: [] }
             ]
           }
         ]

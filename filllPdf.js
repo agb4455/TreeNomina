@@ -5,6 +5,7 @@ function fillPdf(){
 function fillSalaryPerceptions(){
     fillBase();
     fillBonus();
+    fillOther();
 }
 
 function fillBase(){
@@ -28,5 +29,26 @@ function fillBonus(){
         const fila = document.createElement("tr");
         fila.innerHTML = `<td class = "td-pdf" colspan="5">${child.name}</td><td class = "td-pdf">${nValue}</td>`;
         container.appendChild(fila);
+    });
+}
+
+function fillOther(){
+    const node = findNodeInRootByName(root,"Otras Percepciones");
+    console.log(node);
+    const container = document.getElementById("percepciones-no-salariales");
+    container.innerHTML = ""; // Clear previous content
+    node.children.forEach(percepcion => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `<td class = "td-pdf" colspan="6">${percepcion.data.name}</td>`;
+        container.appendChild(fila);
+        if(percepcion.data.children.length !== 0){
+            percepcion.children.forEach(child => {
+                console.log(child);
+                const nValue = parseFloat(child.value) + " €";
+                const fila = document.createElement("tr");
+                fila.innerHTML = `<td class = "td-pdf" colspan="5">${child.name}</td><td class = "td-pdf">${nValue}</td>`;
+                container.appendChild(fila);
+            });
+        }
     });
 }
