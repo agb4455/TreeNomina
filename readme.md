@@ -7,7 +7,7 @@
 Este proyecto está construido con tecnologías modernas como **D3.js** para la visualización, **HTML/CSS** para la interfaz y **JavaScript** para la lógica interactiva. ¡Ideal para profesionales de recursos humanos o cualquier persona interesada en entender mejor una nómina!
 
 🎉 **¡Prueba la aplicación en vivo!**  
-👉 [Visita Nómina Visual en GitHub Pages](https://adriangonzalezblanco.github.io/nomina-visual/)
+👉 [Visita Nómina Visual en GitHub Pages](https://agb4455.github.io/TreeNomina/)
 
 ---
 
@@ -26,8 +26,6 @@ Este proyecto está construido con tecnologías modernas como **D3.js** para la 
 
 ![Captura de Nómina Visual](screenshot.png)  
 *Interfaz interactiva mostrando el árbol de conceptos de una nómina.*
-
-> **Nota**: Asegúrate de subir una captura real de tu proyecto al repositorio como `screenshot.png` y ajusta el nombre del archivo si es necesario.
 
 ---
 
