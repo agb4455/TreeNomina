@@ -1,5 +1,5 @@
 // Variables globales
-let porIrpf = 0.0;
+let porIrpf = 12.0;
 let porSS = 0.0;
 let CAAA = 0.0;
 let CAAAP = 0.0;
