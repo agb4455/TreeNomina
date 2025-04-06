@@ -82,11 +82,11 @@ function deleteNode(node) {
 }
 
 // Función para buscar un nodo por nombre en el árbol
-function findNodeInRootByName( name) {
-  if (root.data.name === name) return node;
-  if (root.children) {
+function findNodeInRootByName(node, name) {
+  if (node.data.name === name) return node;
+  if (node.children) {
     for (let child of node.children) {
-      const found = findNodeByName(child, name);
+      const found = findNodeInRootByName(child, name);
       if (found) return found;
     }
   }
@@ -160,7 +160,7 @@ document.getElementById("editExtraForm").addEventListener("submit", (event) => {
     });
   }else if(thisMoth === false){
     console.log("El nodo 'Pagas Extra' se va a eliminar");
-    deleteNode(findNodeInRootByName("Pagas Extra"));
+    deleteNode(findNodeInRootByName(root,"Pagas Extra"));
   }
   updateValues();
   renderTree();
@@ -302,11 +302,35 @@ function updateValues() {
   
     // Paso 2: Calcular "IRPF" basado en "Devengos" y "porIrpf"
     const irpfNode = findNodeByName(data, "IRPF");
+
     if (irpfNode && devengosNode) {
       irpfNode.value = - (devengosNode.value * (porIrpf / 100)); // Deducción IRPF (negativo)
     } else {
       console.error("Nodo 'IRPF' o 'Devengos' no encontrado");
     }
+
+    //paso3 acutalizar SS
+    //CONTINGENCIAS COMUNES
+    const CCNode = findNodeByName(data, "Contingencias Comunes");
+    if(CCNode){
+      CCNode.value = - (CAAA * (4.7/100));
+    }
+    //MEI
+    const MEINode = findNodeByName(data, "MEI");
+    if(MEINode){
+      MEINode.value = - (CAAA * (0.13/100));
+    }
+    //DESEMPLEO
+    const DESNode = findNodeByName(data, "Desempleo");
+    if(DESNode){
+      DESNode.value = - (CAAP * (1.55/100));
+    }
+    //FORMACION
+    const FPNode = findNodeByName(data, "FP");
+    if(FPNode){
+      FPNode.value = - (CAAP * (0.1/100));
+    }
+    //HE
   
     // Paso 3: Actualizar "Deducciones" sumando sus hijos (incluyendo el nuevo "IRPF")
     const deduccionesNode = findNodeByName(data, "Deducciones");

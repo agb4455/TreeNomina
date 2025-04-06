@@ -55,7 +55,9 @@ const data = {
             info: "Pago a la seguridad social",
             children: [
               { name: "Contingencias Comunes", value: 0.0, info: "Deducción por contingencias" },
-              { name: "MEI", value: 0.0, info: "Deducción MEI" }
+              { name: "MEI", value: 0.0, info: "Deducción MEI" },
+              { name: "FP", value: 0.0, info: "Deducción por Formacion" },
+              { name: "Desempleo", value: 0.0, info: "Deducción por desempleo" }
             ]
           },
           { name: "IRPF", value: 0.0, info: "Impuesto sobre la renta" },
