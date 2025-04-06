@@ -5,7 +5,10 @@ function fillPdf(){
 function fillSalaryPerceptions(){
     fillBase();
     fillBonus();
+<<<<<<< HEAD
     fillOther();
+=======
+>>>>>>> b1f8208733f243d251e6ab728ab19d836ec7efe9
 }
 
 function fillBase(){
@@ -30,6 +33,7 @@ function fillBonus(){
         fila.innerHTML = `<td class = "td-pdf" colspan="5">${child.name}</td><td class = "td-pdf">${nValue}</td>`;
         container.appendChild(fila);
     });
+<<<<<<< HEAD
 }
 
 function fillOther(){
@@ -51,4 +55,6 @@ function fillOther(){
             });
         }
     });
+=======
+>>>>>>> b1f8208733f243d251e6ab728ab19d836ec7efe9
 }
