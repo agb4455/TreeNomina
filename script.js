@@ -1,4 +1,4 @@
-// Variable global porIrpf
+// Variables globales
 let porIrpf = 0.0;
 let porSS = 0.0;
 let CAAA = 0.0;
