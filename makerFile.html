@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recibo Nómina</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 40px;
+      color: #000;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td, th {
+      border: 1px solid black;
+      padding: 4px;
+      vertical-align: top;
+    }
+    .section-title {
+      background-color: #e5e5e5;
+      font-weight: bold;
+      text-align: center;
+    }
+    .no-border {
+      border: none;
+    }
+    .center {
+      text-align: center;
+    }
+    .bold {
+      font-weight: bold;
+    }
+    .gray-bg {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h3 class="center">RECIBO INDIVIDUAL JUSTIFICATIVO DEL PAGO DE SALARIOS</h3>
+
+  <table>
+    <tr>
+      <th colspan="2">EMPRESA</th>
+      <th colspan="4">TRABAJADOR</th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        Domicilio:<br>
+        C.I.F.:<br>
+        Cód. Cta. de Cotización Seg. Soc.:
+      </td>
+      <td colspan="4">
+        N.I.F.:<br>
+        Nº Matrícula: Sec.:<br>
+        Núm. afiliación Seg. Social:<br>
+        Categoría o grupo profesional:<br>
+        Grupo Cotiz.: Fecha Antigüedad:
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">Periodo de Liquidación:</td>
+      <td>Total días:</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <table>
+    <tr>
+      <th colspan="5" class="section-title">I. DEVENGOS</th>
+      <th>TOTALES</th>
+    </tr>
+    <tr>
+      <td colspan="6" class="bold">1. Percepciones Salariales</td>
+    </tr>
+    <tbody id = "percepciones-salariales-base">
+      <!-- Filas insertadas dinamicamente -->
+    </tbody>
+    <tr>
+      <td colspan="6" class = "bold">Complementos salariales</td>
+    </tr>
+    <tr id = "percepciones-salariales-complementos">
+      <!-- Filas insertadas dinamicamente -->
+    </tr>
+
+    <tr><td colspan="6" style="height: 60px;"></td></tr>
+    <tr>
+      <td colspan="6" class="bold">2. Percepciones no salariales</td>
+    </tr>
+
+    <tr id = "percepciones-no-salariales">
+      <!-- Filas insertadas dinamicamente -->
+    </tr>
+    <tr>
+      <td colspan="5" class="bold">A. TOTAL DEVENGADO</td>
+      <td id = "total-devengado"></td>
+    </tr>
+  </table>
+
+  <br>
+
+  <table>
+    <tr>
+      <th colspan="6" class="section-title">II. DEDUCCIONES</th>
+    </tr>
+    <tr>
+      <td colspan="3">Contingencias comunes</td>
+      <td id = "base-imponible-CAAAA"></td>
+      <td id = "porcentaje-imponible">%</td>
+      <td id = total></td>
+    </tr>
+    <tr>
+      <td colspan="5">Desempleo</td><td>%</td>
+    </tr>
+    <tr>
+      <td colspan="5">Formación profesional</td><td>%</td>
+    </tr>
+    <tr>
+      <td colspan="5">Horas Extraordinarias</td><td>%</td>
+    </tr>
+    <tr>
+      <td colspan="5">No estructurales</td><td>%</td>
+    </tr>
+
+    <tr>
+      <td colspan="5" class="bold">1. Total aportaciones</td><td></td>
+    </tr>
+    <tr>
+      <td colspan="5">2. Impuestos sobre la renta de las personas físicas</td><td>%</td>
+    </tr>
+    <tr>
+      <td colspan="5">3. Anticipos</td><td></td>
+    </tr>
+    <tr>
+      <td colspan="5">4. Valor de los productos recibidos en especie</td><td></td>
+    </tr>
+    <tr>
+      <td colspan="5">5. Otras deducciones</td><td></td>
+    </tr>
+    <tr>
+      <td colspan="5" class="bold">B. TOTAL A DEDUCIR (1+2+3+4+5)</td><td></td>
+    </tr>
+    <tr>
+      <td colspan="5" class="bold">LÍQUIDO TOTAL A PERCIBIR (A-B)</td><td></td>
+    </tr>
+  </table>
+
+  <br><br>
+  <p>Firma y sello de la Empresa ___________________________</p>
+  <p class="right">RECIBÍ __________________________________</p>
+
+  <br><br>
+
+  <table>
+    <tr>
+      <th colspan="4" class="section-title">DETERMINACIÓN DE LAS BASES DE COTIZACIÓN A LA SEGURIDAD SOCIAL Y CONCEPTOS DE RECAUDACIÓN CONJUNTA Y DE LA BASE SUJETA A RETENCIÓN DEL I.R.P.F.</th>
+    </tr>
+    <tr>
+      <td>
+        <b>1. Base de Cotización por contingencias comunes</b><br>
+        Remuneración mensual<br>
+        Prorrata Pags. Extras<br>
+        Base incapacidad temporal<br>
+        TOTAL
+      </td>
+      <td>
+        <b>2. Base de cotización por contingencias profesionales</b><br>
+        (AT, EP) y otros de recaudación conjunta (Desempleo, Formación Profesional, Fondo Grtía Salarial)
+      </td>
+      <td>
+        <b>3. Base de cot. adicional por horas extras</b>
+      </td>
+      <td>
+        <b>4. Base sujeta a retención del I.R.P.F.</b>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

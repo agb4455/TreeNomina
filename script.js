@@ -80,7 +80,6 @@ function deleteNode(node) {
   updateValues(); // Volver a renderizar el árbol después de eliminar el nodo
   renderTree();
 }
-
 // Función para buscar un nodo por nombre en el árbol
 function findNodeInRootByName(node, name) {
   if (node.data.name === name) return node;

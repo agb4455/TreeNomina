@@ -2,14 +2,16 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8">
-    <title>Árbol Dinámico con Zoom y Modal</title>
+    <title>Nomina Visual</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="icon" sizes="32x32" href="favicon.png" type="image/png">
   </head>
   <body>
     <div id="topButtons">
       <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
       <button class="open-modal-btn" id="openModalBtn">Modificar Nomina</button>
+      <button class = "update-values-btn" id="generar-pdf">Generar PDF</button>
     </div>
     <div id="overlay" class="overlay"></div>
     <div id="myModal" class="modal">
@@ -61,8 +63,176 @@
     <div id="tooltip" class="tooltip"></div>
     <svg width="100vw" height="100vh"></svg>
 
+    <div id="plantilla-pdf" style="display: none;" class = "body-pdf">
+          
+      <h3 class="center">RECIBO INDIVIDUAL JUSTIFICATIVO DEL PAGO DE SALARIOS</h3>
+
+      <table class = "table-pdf">
+        <tr class = "tr-pdf">
+          <th colspan="2">EMPRESA</th>
+          <th colspan="4">tr class = "tr-pdf"ABAJADOR</th>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="2">
+            Domicilio:<br>
+            C.I.F.:<br>
+            Cód. Cta. de Cotización Seg. Soc.:
+          </td>
+          <td class = "td-pdf" colspan="4">
+            N.I.F.:<br>
+            Nº Matr class = "tr-pdf"ícula: Sec.:<br>
+            Núm. afiliación Seg. Social:<br>
+            Categoría o grupo profesional:<br>
+            Grupo Cotiz.: Fecha Antigüedad:
+          </td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">Periodo de Liquidación:</td>
+          <td class = "td-pdf">Total días:</td>
+        </tr>
+      </table>
+
+      <br>
+
+      <table class="table-pdf">
+        <tr class = "tr-pdf">
+          <th colspan="5" class="section-title">I. DEVENGOS</th>
+          <th>TOTALES</th>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="6" class="bold">1. Percepciones Salariales</td>
+        </tr>
+        <tbody id = "percepciones-salariales-base">
+          <!-- Filas insertadas dinamicamente -->
+        </tbody>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="6" class = "bold">Complementos salariales</td>
+        </tr>
+        <tbody id = "percepciones-salariales-complementos">
+          <!-- Filas insertadas dinamicamente -->
+        </tbody>
+
+        <tr class = "tr-pdf"><td class = "td-pdf" colspan="6" style="height: 60px;"></td></tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="6" class="bold">2. Otras Percepciones</td>
+        </tr>
+
+        <tbody id = "percepciones-no-salariales">
+          <!-- Filas insertadas dinamicamente -->
+        </tbody>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5" class="bold">A. TOTAL DEVENGADO</td>
+          <td class = "td-pdf" id = "total-devengado"></td>
+        </tr>
+      </table>
+
+      <br>
+
+      <table class="table-pdf">
+        <tr class = "tr-pdf">
+          <th colspan="6" class="section-title">II. DEDUCCIONES</th>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="3">Contingencias comunes</td>
+          <td class = "td-pdf" id = "base-imponible-CAAAA"></td>
+          <td class = "td-pdf" id = "porcentaje-imponible">%</td>
+          <td class = "td-pdf" id = total></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">Desempleo</td><td class = "td-pdf">%</td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">Formación profesional</td><td class = "td-pdf">%</td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">Horas Extr class = "tr-pdf"aordinarias</td><td class = "td-pdf">%</td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">No estr class = "tr-pdf"ucturales</td><td class = "td-pdf">%</td>
+        </tr>
+
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5" class="bold">1. Total aportaciones</td><td class = "td-pdf"></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">2. Impuestos sobre la renta de las personas físicas</td><td class = "td-pdf">%</td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">3. Anticipos</td><td class = "td-pdf"></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">4. Valor de los productos recibidos en especie</td><td class = "td-pdf"></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5">5. Otr class = "tr-pdf"as deducciones</td><td class = "td-pdf"></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5" class="bold">B. TOTAL A DEDUCIR (1+2+3+4+5)</td><td class = "td-pdf"></td>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf" colspan="5" class="bold">LÍQUIDO TOTAL A PERCIBIR (A-B)</td><td class = "td-pdf"></td>
+        </tr>
+      </table>
+
+      <br><br>
+      <p>Firma y sello de la Empresa ___________________________</p>
+      <p class="right">RECIBÍ __________________________________</p>
+
+      <br><br>
+
+      <table class="table-pdf">
+        <tr class = "tr-pdf">
+          <th colspan="4" class="section-title">DETERMINACIÓN DE LAS BASES DE COTIZACIÓN A LA SEGURIDAD SOCIAL Y CONCEPTOS DE RECAUDACIÓN CONJUNTA Y DE LA BASE SUJETA A RETENCIÓN DEL I.R.P.F.</th>
+        </tr>
+        <tr class = "tr-pdf">
+          <td class = "td-pdf">
+            <b>1. Base de Cotización por contingencias comunes</b><br>
+            Remuneración mensual<br>
+            Prorrata Pags. Extras<br>
+            Base incapacidad temporal<br>
+            TOTAL
+          </td>
+          <td class = "td-pdf">
+            <b>2. Base de cotización por contingencias profesionales</b><br>
+            (AT, EP) y otros de recaudación conjunta (Desempleo, Formación Profesional, Fondo Grtía Salarial)
+          </td>
+          <td class = "td-pdf">
+            <b>3. Base de cot. adicional por horas extras</b>
+          </td>
+          <td class = "td-pdf">
+            <b>4. Base sujeta a retención del I.R.P.F.</b>
+          </td>
+        </tr>
+      </table>
+    </div>
+
     <!-- Cargar los scripts en orden: primero los datos, luego la lógica -->
     <script src="data.js"></script>
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src = "filllpdf.js"></script>
+    <script>
+
+      function generarPDF() {
+        fillPdf();
+
+        const { jsPDF } = window.jspdf;
+        const plantilla = document.getElementById("plantilla-pdf");
+        plantilla.style.display = "block";
+
+        html2canvas(plantilla, { scale: 2 }).then(canvas => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+          const imgWidth = 210;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+          pdf.save("recibo_nomina.pdf");
+          plantilla.style.display = "none";
+        });
+      }
+
+    document.getElementById("generar-pdf").addEventListener("click", generarPDF)
+    </script>
   </body>
 </html>
