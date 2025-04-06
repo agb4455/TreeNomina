@@ -391,12 +391,14 @@ document.getElementById("closeModalBtn").addEventListener("click", () => {
 
 function fillPdf(){
   fillSalaryPerceptions();
+  fillDeduccions();
 }
 
 function fillSalaryPerceptions(){
   fillBase();
   fillBonus();
   fillOther();
+  fillDevenged();
 }
 
 function fillBase(){
@@ -404,7 +406,7 @@ function fillBase(){
   console.log(node);
   const container = document.getElementById("percepciones-salariales-base");
   container.innerHTML = ""; // Clear previous content
-  const nValue = parseFloat(node.value) + " €";
+  const nValue = parseFloat(node.value).toFixed(2) + " €";
   const fila = document.createElement("tr");
   fila.innerHTML = `<td class = "td-pdf" colspan="5">${node.name}</td><td class = "td-pdf" >${nValue}</td>`;
   container.appendChild(fila);
@@ -416,7 +418,7 @@ function fillBonus(){
   const container = document.getElementById("percepciones-salariales-complementos");
   container.innerHTML = ""; // Clear previous content
   node.children.forEach(child => {
-      const nValue = parseFloat(child.value) + " €";
+      const nValue = parseFloat(child.value).toFixed(2) + " €";
       const fila = document.createElement("tr");
       fila.innerHTML = `<td class = "td-pdf" colspan="5">${child.name}</td><td class = "td-pdf">${nValue}</td>`;
       container.appendChild(fila);
@@ -435,13 +437,99 @@ function fillOther(){
       container.appendChild(fila);
       percepcion.children.forEach(child => {
           console.log(child);
-          const nValue = parseFloat(child.value) + " €";
+          const nValue = parseFloat(child.value).toFixed(2) + " €";
           const fila = document.createElement("tr");
           fila.innerHTML = `<td class = "td-pdf" colspan="5">${child.name}</td><td class = "td-pdf">${nValue}</td>`;
           container.appendChild(fila);
       });
     }
   });
+}
+
+function fillDevenged(){
+  const node = findNodeInRootByName(root,"Devengos");
+  const container = document.getElementById("total-devengado");
+  container.innerHTML = ""; // Clear previous content
+  const nValue = parseFloat(node.data.value).toFixed(2) + " €";
+  const fila = document.createElement("tr");
+  fila.innerHTML = `<td class = "td-pdf bold" colspan="5">A. TOTAL DEVENGADO</td><td class = "td-pdf">${nValue}</td>`;
+  container.appendChild(fila);
+}
+
+function fillDeduccions(){
+  fillContributions();
+  fillTotalDeduccions();
+  fillTotal();
+}
+
+function fillContributions(){
+  const node = findNodeInRootByName(root,"Seguridad Social");
+  const container = document.getElementById("SS");
+  container.innerHTML = ""; // Clear previous content
+  let i = 0;
+  node.children.forEach(child => {
+    console.log(node.children[i]);
+    const nValue = parseFloat(child.data.value).toFixed(2) + " €";
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+    <tr class = "tr-pdf">
+        <td class = "td-pdf" colspan="3">${child.data.name}</td>
+        <td class = "td-pdf" id = "base-imponible-CAAAA">${i<2?CAAA:CAAAP} €</td>
+        <td class = "td-pdf" id = "porcentaje-imponible">${i===0?4.7:i===1?0.13:i===2?0.1:1.55} %</td>
+        <td class = "td-pdf" id = total>${nValue}</td>
+      </tr>
+    `;
+    container.appendChild(fila);
+    i++;
+  });
+  let nValue = parseFloat(node.parent.data.value).toFixed(2) + " €";
+  let fila = document.createElement("tr");
+  fila.innerHTML = `
+    <tr class = "tr-pdf">
+      <td class = "td-pdf bold" colspan="5">1. Total aportaciones</td><td class = "td-pdf">${nValue}</td>
+    </tr>
+  `;
+  container.appendChild(fila);
+  const node2 = findNodeInRootByName(root,"IRPF");
+  nValue = parseFloat(node.data.value).toFixed(2) + " €";
+  fila = document.createElement("tr");
+  fila.innerHTML = `
+    <tr class = "tr-pdf">
+      <td class = "td-pdf bold" colspan="4">2. Impuestos sobre la renta de las personas físicas</td>
+      <td class = "td-pdf" id = "porcentaje-imponible">${porIrpf} %</td>
+      <td class = "td-pdf">${nValue}</td>
+    </tr>
+  `;
+  container.appendChild(fila);
+}
+
+function fillTotalDeduccions(){
+  const node = findNodeInRootByName(root,"Deducciones");
+  const container = document.getElementById("total-deducciones");
+  container.innerHTML = ""; // Clear previous content
+  const nValue = parseFloat(node.data.value).toFixed(2) + " €";
+  const fila = document.createElement("tr");
+  fila.innerHTML = `
+    <tr class = "tr-pdf">
+      <td class = "td-pdf bold" colspan="5">B. TOTAL A DEDUCIR (1+2)</td>
+      <td class = "td-pdf">${nValue}</td>
+    </tr>
+  `;
+  container.appendChild(fila);
+}
+
+function fillTotal(){
+  let container = document.getElementById("total-a-percibir");
+  container.innerHTML = ""; // Clear previous content
+  let val = root.data.value.toFixed(2) + " €";
+  let fila = document.createElement("tr");
+  fila.innerHTML = `
+    <tr class = "tr-pdf">
+      <td class = "td-pdf" colspan="5" class="bold">LÍQUIDO TOTAL A PERCIBIR (A-B)</td>
+      <td class = "td-pdf">${val}</td>
+    </tr>
+  `;
+  container.appendChild(fila);
 }
 
 // Renderizar el árbol inicialmente
