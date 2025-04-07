@@ -9,10 +9,38 @@
   </head>
   <body>
     <div id="topButtons">
-      <button class="update-values-btn" id="updateValuesBtn">Actualizar Valores</button>
+      <button class="update-values-btn" id="updateValuesBtn" style="display: none;">Actualizar Valores</button>
+      <button class = "update-values-btn" id="generar-pdf-dialog">Generar PDF</button>
       <button class="open-modal-btn" id="openModalBtn">Modificar Nomina</button>
-      <button class = "update-values-btn" id="generar-pdf">Generar PDF</button>
     </div>
+
+    <div id="overlay-pdf" class="overlay"></div>
+    <div id = "modal-pdf" class = "modal">
+      <span class="close-btn" id="closeModalBtn-pdf">×</span>
+      <div class="modal-header">Generar Pdf de la Nomina</div>
+      <div class="modal-body">
+        <form class="modal-form" id="Company-fill">
+          <label>Empresa: </label>
+          <label for="companyName">Nombre:</label>
+          <input type="text" id="companyName" required />
+          <label for="companyAddress">Dirección :</label>
+          <input type="text" id="companyAddress" required />
+          <label for="companyCIF">CIF:</label>
+          <input type="text" id="companyCIF" required />
+          <label></label>
+          <label>Trabajador: </label>
+          <label for="workerName">Nombre:</label>
+          <input type="text" id="workerName" required />
+          <label for="workerAddress">Dirección :</label>
+          <input type="text" id="workerAddress" required />
+          <label for="DNI">DNI:</label>
+          <input type="text" id="DNI" required />
+          <label></label>
+          <button type="submit">Generar</button>
+        </form>
+      </div>
+    </div>
+
     <div id="overlay" class="overlay"></div>
     <div id="myModal" class="modal">
       <span class="close-btn" id="closeModalBtn">×</span>
@@ -149,7 +177,7 @@
       <p class="right">RECIBÍ __________________________________</p>
 
       <br><br>
-
+      <!--
       <table class="table-pdf">
         <tr class = "tr-pdf">
           <th colspan="4" class="section-title">DETERMINACIÓN DE LAS BASES DE COTIZACIÓN A LA SEGURIDAD SOCIAL Y CONCEPTOS DE RECAUDACIÓN CONJUNTA Y DE LA BASE SUJETA A RETENCIÓN DEL I.R.P.F.</th>
@@ -173,7 +201,7 @@
             <b>4. Base sujeta a retención del I.R.P.F.</b>
           </td>
         </tr>
-      </table>
+      </table>-->
     </div>
 
     <!-- Cargar los scripts en orden: primero los datos, luego la lógica -->
@@ -182,21 +210,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-
       function generarPDF() {
         fillPdf();
-
         const { jsPDF } = window.jspdf;
         const plantilla = document.getElementById("plantilla-pdf");
         plantilla.style.display = "block";
 
-        html2canvas(plantilla, { scale: 2 }).then(canvas => {
-          const imgData = canvas.toDataURL("image/png");
+        html2canvas(plantilla, { scale: 3, width: 595 }).then(canvas => {
+          const imgData = canvas.toDataURL("image/png", 1.0);
           const pdf = new jsPDF("p", "mm", "a4");
-          const imgWidth = 210;
+          const pageWidth = 210;
+          const pageHeight = 297;
+
+          const imgWidth = pageWidth;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "SLOW");
+          heightLeft -= pageHeight;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "SLOW");
+            heightLeft -= pageHeight;
+          }
+
           pdf.save("recibo_nomina.pdf");
+          plantilla.style.display = "none";
+        }).catch(error => {
+          console.error("Error al generar el PDF:", error);
           plantilla.style.display = "none";
         });
       }

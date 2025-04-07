@@ -210,3 +210,12 @@ body {
 .gray-bg {
   background-color: #f2f2f2;
 }
+
+#plantilla-pdf {
+  width: 595px; /* Ancho completo de A4 a 96 DPI */
+  padding: 20px;
+  box-sizing: border-box;
+  font-size: 10px; /* Tamaño legible, ajustable */
+  font-family: Arial, sans-serif;
+  display: none;
+}

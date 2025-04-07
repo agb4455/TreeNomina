@@ -119,6 +119,12 @@ function updateFromNode(node) {
 }
 
 // Función para abrir el modal y mostrar los valores actuales
+function abrirCompanyModal() {
+  document.getElementById("overlay-pdf").style.display = "block";
+  document.getElementById("modal-pdf").style.display = "block";
+}
+
+// Función para abrir el modal y mostrar los valores actuales
 function abrirModal() {
   const salarioBase = root.descendants().find(d => d.data.name === "Salario Base");
   if (salarioBase) {
@@ -197,6 +203,14 @@ document.getElementById("editExtraForm").addEventListener("submit", (event) => {
   //document.getElementById("overlay").style.display = "none";
   //document.getElementById("myModal").style.display = "none";
 });
+
+document.getElementById("modal-pdf").addEventListener("click", (event) => {
+  event.preventDefault();
+  generarPDF();
+  document.getElementById("overlay-pdf").style.display = "none";
+  document.getElementById("modal-pdf").style.display = "none";
+});
+
 
 // Guardar el valor actualizado del salario base
 document.getElementById("editSalaryForm").addEventListener("submit", (event) => {
@@ -383,10 +397,16 @@ function updateValues() {
 
 // Eventos para abrir y cerrar el modal
 document.getElementById("openModalBtn").addEventListener("click", abrirModal);
+document.getElementById("generar-pdf-dialog").addEventListener("click", abrirCompanyModal);
 
 document.getElementById("closeModalBtn").addEventListener("click", () => {
   document.getElementById("overlay").style.display = "none";
   document.getElementById("myModal").style.display = "none";
+});
+
+document.getElementById("closeModalBtn-pdf").addEventListener("click", () => {
+  document.getElementById("overlay-pdf").style.display = "none";
+  document.getElementById("modal-pdf").style.display = "none";
 });
 
 function fillPdf(){
