@@ -571,13 +571,13 @@ function fillHeaders(dts){
   let fila = document.createElement("tr");
   fila.innerHTML = `
     <tr class = "tr-pdf">
-      <td class = "td-pdf" colspan="2">
+      <td class = "td-pdf" colspan="3">
         Nombre: ${dts[0]}<br>
         Domicilio: ${dts[1]}<br>
         C.I.F.:${dts[2]}<br>
       </td>
       
-      <td class = "td-pdf" colspan="4">
+      <td class = "td-pdf" colspan="3">
         Nombre: ${dts[3]}<br>
         NIF: ${dts[4]}<br>
         NAF: ${dts[5]}<br>
@@ -587,6 +587,16 @@ function fillHeaders(dts){
     </tr>
   `;
   container.appendChild(fila);
+
+  let container2 = document.getElementById("liqPer");
+  container2.innerHTML = ""; // Clear previous content
+  let fila2 = document.createElement("tr");
+  fila2.innerHTML = `
+    <tr>
+      <td class = "td-pdf" colspan = "6"> Mes de liquidacion: </td>
+    </tr>
+  `;
+  container2.appendChild(fila2);
 }
 
 // Renderizar el árbol inicialmente
