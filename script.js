@@ -204,9 +204,20 @@ document.getElementById("editExtraForm").addEventListener("submit", (event) => {
   //document.getElementById("myModal").style.display = "none";
 });
 
-document.getElementById("modal-pdf").addEventListener("click", (event) => {
+document.getElementById("Company-fill").addEventListener("submit", (event) => {
   event.preventDefault();
-  generarPDF();
+  let dts = [
+    document.getElementById("companyName").value,
+    document.getElementById("companyAddress").value,
+    document.getElementById("companyCIF").value,
+    document.getElementById("workerName").value,
+    document.getElementById("workerAddress").value,
+    document.getElementById("DNI").value,
+    document.getElementById("NAF").value,
+    document.getElementById("profGroup").value,
+    document.getElementById("cotGroup").value,
+  ]
+  generarPDF(dts);
   document.getElementById("overlay-pdf").style.display = "none";
   document.getElementById("modal-pdf").style.display = "none";
 });
@@ -409,7 +420,8 @@ document.getElementById("closeModalBtn-pdf").addEventListener("click", () => {
   document.getElementById("modal-pdf").style.display = "none";
 });
 
-function fillPdf(){
+function fillPdf(dts){
+  fillHeaders(dts);
   fillSalaryPerceptions();
   fillDeduccions();
 }
@@ -547,6 +559,31 @@ function fillTotal(){
     <tr class = "tr-pdf">
       <td class = "td-pdf" colspan="5" class="bold">LÍQUIDO TOTAL A PERCIBIR (A-B)</td>
       <td class = "td-pdf">${val}</td>
+    </tr>
+  `;
+  container.appendChild(fila);
+}
+
+function fillHeaders(dts){
+  
+  let container = document.getElementById("dtsinit");
+  container.innerHTML = ""; // Clear previous content
+  let fila = document.createElement("tr");
+  fila.innerHTML = `
+    <tr class = "tr-pdf">
+      <td class = "td-pdf" colspan="2">
+        Nombre: ${dts[0]}<br>
+        Domicilio: ${dts[1]}<br>
+        C.I.F.:${dts[2]}<br>
+      </td>
+      
+      <td class = "td-pdf" colspan="4">
+        Nombre: ${dts[3]}<br>
+        NIF: ${dts[4]}<br>
+        NAF: ${dts[5]}<br>
+        Categoría o grupo profesional: ${dts[6]}<br>
+        Grupo Cotiz.: ${dts[7]}<br>
+      </td>
     </tr>
   `;
   container.appendChild(fila);

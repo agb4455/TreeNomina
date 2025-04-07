@@ -35,6 +35,12 @@
           <input type="text" id="workerAddress" required />
           <label for="DNI">DNI:</label>
           <input type="text" id="DNI" required />
+          <label for="NAF">NAF:</label>
+          <input type="text" id="NAF" required />
+          <label for="profGroup">Grupo profesional :</label>
+          <input type="text" id="profGroup" required />
+          <label for="cotGroup">Grupo de cotización:</label>
+          <input type="text" id="cotGroup" required />
           <label></label>
           <button type="submit">Generar</button>
         </form>
@@ -98,22 +104,9 @@
       <table class = "table-pdf">
         <tr class = "tr-pdf">
           <th colspan="2">EMPRESA</th>
-          <th colspan="4">tr class = "tr-pdf"ABAJADOR</th>
+          <th colspan="4">TRABAJADOR</th>
         </tr>
-        <tr class = "tr-pdf">
-          <td class = "td-pdf" colspan="2">
-            Domicilio:<br>
-            C.I.F.:<br>
-            Cód. Cta. de Cotización Seg. Soc.:
-          </td>
-          <td class = "td-pdf" colspan="4">
-            N.I.F.:<br>
-            Nº Matr class = "tr-pdf"ícula: Sec.:<br>
-            Núm. afiliación Seg. Social:<br>
-            Categoría o grupo profesional:<br>
-            Grupo Cotiz.: Fecha Antigüedad:
-          </td>
-        </tr>
+        <tbody id="dtsinit"></tbody>
         <tr class = "tr-pdf">
           <td class = "td-pdf" colspan="5">Periodo de Liquidación:</td>
           <td class = "td-pdf">Total días:</td>
@@ -210,8 +203,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-      function generarPDF() {
-        fillPdf();
+      function generarPDF(dts) {
+        fillPdf(dts);
         const { jsPDF } = window.jspdf;
         const plantilla = document.getElementById("plantilla-pdf");
         plantilla.style.display = "block";
